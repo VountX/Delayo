@@ -1,0 +1,78 @@
+# ⚙️ Dependências
+node_modules/
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# 📦 Builds e artefatos
+dist/
+dist-ssr/
+build/
+out/
+*.local
+
+# 🧪 Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# 💥 Relatórios de erros
+*.tsbuildinfo
+coverage/
+*.log
+
+# 🌐 Arquivos do sistema
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# 🖥️ Windows-specific
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# 🧠 TypeScript (se gerar tipos fora de src/)
+src/**/*.d.ts
+*.d.ts
+
+# 🛠️ VS Code
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# 🧠 JetBrains IDEs (WebStorm, PhpStorm, IntelliJ, etc.)
+.idea/
+*.iml
+*.iws
+
+# 🚧 Trae IDE (se similar ao VS Code, sem necessidade de regra extra)
+.trae/
+!.trae/extensions.json
+!.trae/settings.json
+
+# 🧹 Arquivos temporários e backups
+*.tmp
+*.bak
+*.orig
+*.rej
+*.log.*
+*~ 
+*.swp
+*.swn
+*.swo
+
+# 🧪 Ambiente local
+.env
+.env.*
+!.env.example
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
