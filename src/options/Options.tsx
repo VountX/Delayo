@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { DelayedTab } from '@types';
 import useTheme from '@utils/useTheme.tsx';
+
 import DelaySettings from './DelaySettings';
 
 // Defining the component as a function declaration per ESLint rule
@@ -189,19 +189,20 @@ function Options(): React.ReactElement {
         >
           <FontAwesomeIcon
             icon={theme === 'light' ? 'moon' : 'sun'}
-            className={theme === 'light' ? "text-delayo-purple" : ""}
+            className={theme === 'light' ? 'text-delayo-purple' : ''}
             style={theme === 'light' ? {} : { color: '#FFBF00' }}
-          /> {theme === 'light' ? ' Modo Escuro' : ' Modo Claro'}
+          />{' '}
+          {theme === 'light' ? ' Modo Escuro' : ' Modo Claro'}
         </button>
       </div>
-      
+
       <div className='tabs mb-6'>
-        <a className='tab tab-bordered tab-active'>Abas Adormecidas</a>
-        <a className='tab tab-bordered'>Configurações</a>
+        <a className='tab-bordered tab tab-active'>Abas Adormecidas</a>
+        <a className='tab-bordered tab'>Configurações</a>
       </div>
-      
+
       {content}
-      
+
       <div className='mt-8'>
         <DelaySettings />
       </div>

@@ -31,16 +31,20 @@ Descreva a motivação por trás da ideia e como ela poderia beneficiar os usuá
 5. Abra um Pull Request explicando o que foi feito
 
 ### 🧹 Convenções
+
 - Use mensagens de commit semânticas (feat:, fix:, docs:, chore:)
 - Padronização de código via eslint e prettier
 - UI: seguimos Tailwind + DaisyUI
 
 ### 🤝 Código de Conduta
+
 Esperamos respeito, colaboração e acolhimento.
 Leia o nosso Código de Conduta (a ser incluído) para detalhes.
 
 ### 🧾 Licença
-Ao enviar uma contribuição, você concorda que ela será licenciada sob a [MIT License](https://opensource.org/license/mit).
+
+Ao enviar uma contribuição, você concorda que ela será licenciada sob
+a [MIT License](https://opensource.org/license/mit).
 
 ---
 Para qualquer dúvida, abra uma issue ou entre em contato diretamente. Obrigado por fortalecer o Delayo!

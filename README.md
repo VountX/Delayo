@@ -1,17 +1,20 @@
 # Delayo Chrome Extension 💤
 
 **Adie suas abas com estilo — e volte a elas no momento certo.**  
-Delayo é uma extensão do Chrome que permite "colocar abas em espera", escondendo-as temporariamente e reabrindo-as no momento que você escolher.  
+Delayo é uma extensão do Chrome que permite "colocar abas em espera", escondendo-as temporariamente e reabrindo-as no
+momento que você escolher.  
 Ideal para quem quer foco, organização e menos bagunça na barra de abas.
 
-> 📌 Este projeto é um *hard fork* do [Snoozr](https://github.com/hardchor/snoozr), com novas ideias, identidade própria e planos de evolução distintos.
+> 📌 Este projeto é um *hard fork* do [Snoozr](https://github.com/hardchor/snoozr), com novas ideias, identidade própria
+> e planos de evolução distintos.
 
 ---
 
 ## 🚀 Features
 
 - 💤 **Delay Tabs**: Adie abas temporariamente para focar no que importa agora
-- ⏰ **Flexible Timing**: Escolha entre horários predefinidos (hoje à noite, amanhã, semana que vem) ou data/hora customizada
+- ⏰ **Flexible Timing**: Escolha entre horários predefinidos (hoje à noite, amanhã, semana que vem) ou data/hora
+  customizada
 - 🔔 **Notifications**: Seja avisado quando as abas "acordarem"
 - 📋 **Delay Manager**: Gerencie todas as abas adiadas em um só lugar
 - 🌙 **Dark Mode**: Tema escuro automático com base no sistema
@@ -20,14 +23,14 @@ Ideal para quem quer foco, organização e menos bagunça na barra de abas.
 
 ## 🧰 Tech Stack
 
-| Tecnologia    | Função                                          |
-|---------------|--------------------------------------------------|
-| **Vite**      | Desenvolvimento rápido com hot reload           |
-| **TypeScript**| Tipagem segura e produtividade no código        |
-| **React**     | Interfaces dinâmicas e responsivas              |
-| **CRX**       | Empacotamento moderno de extensões para o Chrome|
-| **Tailwind CSS** | Estilização ágil e escalável                 |
-| **DaisyUI**   | Componentes elegantes com suporte a temas       |
+| Tecnologia       | Função                                           |
+|------------------|--------------------------------------------------|
+| **Vite**         | Desenvolvimento rápido com hot reload            |
+| **TypeScript**   | Tipagem segura e produtividade no código         |
+| **React**        | Interfaces dinâmicas e responsivas               |
+| **CRX**          | Empacotamento moderno de extensões para o Chrome |
+| **Tailwind CSS** | Estilização ágil e escalável                     |
+| **DaisyUI**      | Componentes elegantes com suporte a temas        |
 
 ---
 

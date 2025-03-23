@@ -10,12 +10,27 @@ function CustomDelayView(): React.ReactElement {
 
   useEffect(() => {
     const getCurrentTab = async (): Promise<void> => {
-      const [tab] = await chrome.tabs.query({
-        active: true,
-        currentWindow: true,
-      });
-      setActiveTab(tab);
-      setLoading(false);
+      try {
+        if (typeof chrome !== 'undefined' && chrome.tabs && chrome.tabs.query) {
+          const [tab] = await chrome.tabs.query({
+            active: true,
+            currentWindow: true,
+          });
+          setActiveTab(tab);
+        } else {
+          // Development mode mock data
+          setActiveTab({
+            id: 123,
+            url: 'https://example.com',
+            title: 'Example Page (DEV MODE)',
+            favIconUrl: 'https://www.google.com/favicon.ico',
+          } as chrome.tabs.Tab);
+        }
+      } catch (error) {
+        console.error('Error getting tab:', error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     getCurrentTab();
@@ -36,22 +51,36 @@ function CustomDelayView(): React.ReactElement {
     };
 
     // Save delayed tab info to storage
-    await chrome.storage.local.get({ delayedTabs: [] }, async (data) => {
-      const { delayedTabs } = data;
-      delayedTabs.push(tabInfo);
-      await chrome.storage.local.set({ delayedTabs });
+    if (
+      typeof chrome !== 'undefined' &&
+      chrome.storage &&
+      chrome.storage.local
+    ) {
+      await chrome.storage.local.get({ delayedTabs: [] }, async (data) => {
+        const { delayedTabs } = data;
+        delayedTabs.push(tabInfo);
+        await chrome.storage.local.set({ delayedTabs });
 
-      // Create alarm for this tab
-      await chrome.alarms.create(`delayed-tab-${tabInfo.id}`, {
-        when: wakeTime,
+        // Create alarm for this tab
+        if (chrome.alarms) {
+          await chrome.alarms.create(`delayed-tab-${tabInfo.id}`, {
+            when: wakeTime,
+          });
+        }
+
+        // Close the tab
+        if (chrome.tabs) {
+          await chrome.tabs.remove(tabInfo.id);
+        }
+
+        // Close the popup
+        if (window.close) {
+          window.close();
+        }
       });
-
-      // Close the tab
-      await chrome.tabs.remove(tabInfo.id);
-
-      // Close the popup
-      window.close();
-    });
+    } else {
+      console.log('Development mode - tab would be delayed:', tabInfo);
+    }
   };
 
   if (loading) {
@@ -63,7 +92,7 @@ function CustomDelayView(): React.ReactElement {
   }
 
   return (
-    <div className='card w-80 bg-base-100 shadow-md rounded-xl'>
+    <div className='card w-80 rounded-xl bg-base-100 shadow-md'>
       <div className='card-body p-6'>
         <div className='mb-5 flex items-center'>
           <Link
@@ -87,7 +116,9 @@ function CustomDelayView(): React.ReactElement {
               />
             </svg>
           </Link>
-          <h2 className='card-title text-delayo-orange font-medium'>Escolher Data/Hora</h2>
+          <h2 className='card-title font-medium text-delayo-orange'>
+            Escolher Data/Hora
+          </h2>
         </div>
 
         {activeTab && (
@@ -115,11 +146,13 @@ function CustomDelayView(): React.ReactElement {
 
         <div className='form-control'>
           <label className='label'>
-            <span className='label-text font-medium'>Escolha a data e hora</span>
+            <span className='label-text font-medium'>
+              Escolha a data e hora
+            </span>
           </label>
           <input
             type='datetime-local'
-            className='input input-bordered w-full bg-base-200/70 focus:bg-base-200 transition-all duration-200 border-none shadow-sm'
+            className='input input-bordered w-full border-none bg-base-200/70 shadow-sm transition-all duration-200 focus:bg-base-200'
             value={customDate}
             onChange={(e) => setCustomDate(e.target.value)}
             min={new Date().toISOString().slice(0, 16)}
@@ -128,7 +161,7 @@ function CustomDelayView(): React.ReactElement {
 
         <div className='card-actions mt-6 justify-end'>
           <button
-            className='btn btn-primary border-none shadow-sm hover:shadow transition-all duration-200'
+            className='btn btn-primary border-none shadow-sm transition-all duration-200 hover:shadow'
             onClick={handleDelay}
             disabled={!activeTab || !customDate}
           >

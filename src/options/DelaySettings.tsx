@@ -38,9 +38,8 @@ function DelaySettings(): React.ReactElement {
     const loadSettings = async (): Promise<void> => {
       try {
         setLoading(true);
-        const { delaySettings = defaultSettings } = await chrome.storage.local.get(
-          'delaySettings'
-        );
+        const { delaySettings = defaultSettings } =
+          await chrome.storage.local.get('delaySettings');
         setSettings(delaySettings);
       } catch (error) {
         // Silenciosamente trata o erro
@@ -208,7 +207,7 @@ function DelaySettings(): React.ReactElement {
                   <input
                     type='radio'
                     name='nextMonthOption'
-                    className='radio radio-primary'
+                    className='radio-primary radio'
                     checked={settings.nextMonthSameDay}
                     onChange={() => updateSetting('nextMonthSameDay', true)}
                   />
@@ -220,7 +219,7 @@ function DelaySettings(): React.ReactElement {
                   <input
                     type='radio'
                     name='nextMonthOption'
-                    className='radio radio-primary'
+                    className='radio-primary radio'
                     checked={!settings.nextMonthSameDay}
                     onChange={() => updateSetting('nextMonthSameDay', false)}
                   />

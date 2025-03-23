@@ -1,3 +1,4 @@
+;
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-param-reassign */
 import { resolve } from 'path';
@@ -6,7 +7,9 @@ import react from '@vitejs/plugin-react-swc';
 import { defineConfig, Plugin } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
+
 import manifest from './src/manifest';
+
 
 const viteManifestHackIssue846: Plugin & {
   renderCrxManifest: (manifest: any, bundle: any) => void;

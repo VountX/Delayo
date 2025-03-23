@@ -1,24 +1,24 @@
 // Configuração do Font Awesome
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
-  faMugHot,
-  faMoon,
+  faBriefcase,
+  faCalendarDays,
+  faClock,
   faCloudSun,
   faCouch,
-  faBriefcase,
   faEnvelope,
-  faUmbrellaBeach,
-  faCalendarDays,
-  faRepeat,
-  faSun,
-  faClock,
   faFire,
-  faSnowflake,
   faLeaf,
+  faMoon,
+  faMountain,
+  faMugHot,
+  faRepeat,
+  faSnowflake,
+  faSun,
+  faTree,
+  faUmbrellaBeach,
   faWater,
   faWind,
-  faMountain,
-  faTree
 } from '@fortawesome/free-solid-svg-icons';
 
 // Adiciona os ícones à biblioteca do Font Awesome para uso global

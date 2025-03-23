@@ -1,4 +1,4 @@
-import { RecurrencePattern, DelayedTab } from '@types';
+import { DelayedTab, RecurrencePattern } from '@types';
 
 // Initialize extension when installed
 chrome.runtime.onInstalled.addListener(({ reason }) => {

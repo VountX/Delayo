@@ -1,7 +1,6 @@
 import React, { useEffect, useId, useState } from 'react';
 import { Link } from '@tanstack/react-router';
-
-import { RecurrencePattern, DelayedTab } from '@types';
+import { DelayedTab, RecurrencePattern } from '@types';
 
 // Accessible Form Control component using function declaration with destructured props
 function FormControl({
@@ -48,13 +47,29 @@ function RecurringDelayView(): React.ReactElement {
 
   useEffect(() => {
     const getCurrentTab = async (): Promise<void> => {
-      const [tab] = await chrome.tabs.query({
-        active: true,
-        currentWindow: true,
-      });
-      setActiveTab(tab);
-      setLoading(false);
+      try {
+        if (typeof chrome !== 'undefined' && chrome.tabs && chrome.tabs.query) {
+          const [tab] = await chrome.tabs.query({
+            active: true,
+            currentWindow: true,
+          });
+          setActiveTab(tab);
+        } else {
+          // Development mode mock data
+          setActiveTab({
+            id: 123,
+            url: 'https://example.com',
+            title: 'Example Page (DEV MODE)',
+            favIconUrl: 'https://www.google.com/favicon.ico',
+          } as chrome.tabs.Tab);
+        }
+      } catch (error) {
+        console.error('Error getting tab:', error);
+      } finally {
+        setLoading(false);
+      }
     };
+
     getCurrentTab();
   }, []);
 
@@ -137,23 +152,37 @@ function RecurringDelayView(): React.ReactElement {
       recurrencePattern,
     };
 
-    // Save to storage
-    await chrome.storage.local.get({ delayedTabs: [] }, async (data) => {
-      const { delayedTabs } = data;
-      delayedTabs.push(tabInfo);
-      await chrome.storage.local.set({ delayedTabs });
+    if (
+      typeof chrome !== 'undefined' &&
+      chrome.storage &&
+      chrome.storage.local
+    ) {
+      // Save to storage
+      chrome.storage.local.get({ delayedTabs: [] }, async (data) => {
+        const { delayedTabs } = data;
+        delayedTabs.push(tabInfo);
+        await chrome.storage.local.set({ delayedTabs });
 
-      // Create alarm for this tab
-      await chrome.alarms.create(`delayed-tab-${tabInfo.id}`, {
-        when: firstWakeTime.getTime(),
+        // Create alarm for this tab
+        if (chrome.alarms) {
+          await chrome.alarms.create(`delayed-tab-${tabInfo.id}`, {
+            when: firstWakeTime.getTime(),
+          });
+        }
+
+        // Close the tab
+        if (chrome.tabs) {
+          await chrome.tabs.remove(tabInfo.id);
+        }
+
+        // Close the popup
+        if (window.close) {
+          window.close();
+        }
       });
-
-      // Close the tab
-      await chrome.tabs.remove(tabInfo.id);
-
-      // Close the popup
-      window.close();
-    });
+    } else {
+      console.log('Development mode - tab would be delayed:', tabInfo);
+    }
   };
 
   if (loading) {
@@ -189,7 +218,9 @@ function RecurringDelayView(): React.ReactElement {
               />
             </svg>
           </Link>
-          <h2 className='card-title text-delayo-orange'>Adiamento Recorrente</h2>
+          <h2 className='card-title text-delayo-orange'>
+            Adiamento Recorrente
+          </h2>
         </div>
 
         {activeTab && (
@@ -274,7 +305,9 @@ function RecurringDelayView(): React.ReactElement {
               max='31'
               value={dayOfMonth}
               onChange={(e) =>
-                setDayOfMonth(Math.min(31, Math.max(1, parseInt(e.target.value, 10) || 1)))
+                setDayOfMonth(
+                  Math.min(31, Math.max(1, parseInt(e.target.value, 10) || 1))
+                )
               }
             />
           </FormControl>

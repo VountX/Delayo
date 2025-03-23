@@ -67,7 +67,16 @@ const useTheme = (): {
     setTheme(newTheme);
     document.documentElement.setAttribute('data-theme', newTheme);
     // Save theme preference
-    chrome.storage.local.set({ theme: newTheme });
+    if (
+      typeof chrome !== 'undefined' &&
+      chrome.storage &&
+      chrome.storage.local
+    ) {
+      chrome.storage.local.set({ theme: newTheme });
+    } else {
+      // For development mode
+      localStorage.setItem('theme', newTheme);
+    }
   };
 
   return { theme, toggleTheme };

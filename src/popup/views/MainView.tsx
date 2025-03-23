@@ -1,10 +1,10 @@
 // filepath: /home/burkhard/Code/delayo/src/popup/views/MainView.tsx
 import React, { useEffect, useState } from 'react';
-import { Link } from '@tanstack/react-router';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
-import { DelayOption } from '@types';
 import { faHourglassHalf } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Link } from '@tanstack/react-router';
+import { DelayOption } from '@types';
+
 import useTheme from '../../utils/useTheme';
 
 // Definição do tipo para as configurações de adiamento
@@ -40,12 +40,26 @@ function MainView(): React.ReactElement {
 
   useEffect(() => {
     const getCurrentTab = async (): Promise<void> => {
-      const [tab] = await chrome.tabs.query({
-        active: true,
-        currentWindow: true,
-      });
-      setActiveTab(tab);
-      setLoading(false);
+      try {
+        if (typeof chrome !== 'undefined' && chrome.tabs) {
+          const [tab] = await chrome.tabs.query({
+            active: true,
+            currentWindow: true,
+          });
+          setActiveTab(tab);
+        } else {
+          setActiveTab({
+            id: 123,
+            url: 'https://example.com',
+            title: 'Example Page (DEV MODE)',
+            favIconUrl: 'https://www.google.com/favicon.ico',
+          } as chrome.tabs.Tab);
+        }
+      } catch (error) {
+        console.error('Error getting tab:', error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     getCurrentTab();
@@ -55,12 +69,15 @@ function MainView(): React.ReactElement {
   useEffect(() => {
     const loadSettings = async (): Promise<void> => {
       try {
-        const { delaySettings } = await chrome.storage.local.get('delaySettings');
-        if (delaySettings) {
-          setSettings(delaySettings);
+        if (typeof chrome !== 'undefined' && chrome.storage) {
+          const { delaySettings } =
+            await chrome.storage.local.get('delaySettings');
+          if (delaySettings) {
+            setSettings(delaySettings);
+          }
         }
       } catch (error) {
-        // Silenciosamente trata o erro
+        console.error('Error loading settings:', error);
       }
     };
 
@@ -68,16 +85,18 @@ function MainView(): React.ReactElement {
   }, []);
 
   // Função para extrair horas e minutos de uma string no formato HH:MM
-  const getTimeFromString = (timeString: string): { hours: number; minutes: number } => {
+  const getTimeFromString = (
+    timeString: string
+  ): { hours: number; minutes: number } => {
     const [hours, minutes] = timeString.split(':').map(Number);
     return { hours, minutes };
   };
 
   const delayOptions: DelayOption[] = [
-    { 
-      id: 'later_today', 
-      label: `Mais Tarde (em ${settings.laterToday}h)`, 
-      hours: settings.laterToday 
+    {
+      id: 'later_today',
+      label: `Mais Tarde (em ${settings.laterToday}h)`,
+      hours: settings.laterToday,
     },
     {
       id: 'tonight',
@@ -115,7 +134,7 @@ function MainView(): React.ReactElement {
         const today = new Date();
         const currentDay = today.getDay(); // 0 é Domingo, 6 é Sábado
         const targetDay = settings.weekendDay === 'saturday' ? 6 : 0;
-        
+
         // Calcula quantos dias faltam até o dia alvo
         let daysUntilTarget;
         if (currentDay === targetDay) {
@@ -144,7 +163,7 @@ function MainView(): React.ReactElement {
         const today = new Date();
         const currentDay = today.getDay(); // 0 é Domingo, 1 é Segunda
         const targetDay = settings.nextWeekDay;
-        
+
         // Calcula quantos dias faltam até o dia alvo na próxima semana
         let daysUntilTarget;
         if (currentDay === targetDay) {
@@ -171,12 +190,16 @@ function MainView(): React.ReactElement {
       calculateTime: () => {
         const today = new Date();
         const targetDate = new Date();
-        
+
         if (settings.nextMonthSameDay) {
           // Mesmo dia do mês seguinte
           targetDate.setMonth(today.getMonth() + 1);
           // Verifica se o dia existe no próximo mês (ex: 31 de janeiro -> 28/29 de fevereiro)
-          const lastDayOfNextMonth = new Date(today.getFullYear(), today.getMonth() + 2, 0).getDate();
+          const lastDayOfNextMonth = new Date(
+            today.getFullYear(),
+            today.getMonth() + 2,
+            0
+          ).getDate();
           if (today.getDate() > lastDayOfNextMonth) {
             targetDate.setDate(lastDayOfNextMonth);
           }
@@ -184,40 +207,46 @@ function MainView(): React.ReactElement {
           // Mesmo dia da semana no próximo mês
           const currentDay = today.getDay();
           const currentWeekOfMonth = Math.ceil(today.getDate() / 7);
-          
+
           // Avança para o próximo mês
           targetDate.setMonth(today.getMonth() + 1);
           // Define o dia 1 do próximo mês
           targetDate.setDate(1);
-          
+
           // Encontra o primeiro dia da semana correspondente no próximo mês
           while (targetDate.getDay() !== currentDay) {
             targetDate.setDate(targetDate.getDate() + 1);
           }
-          
+
           // Avança para a semana correspondente
-          targetDate.setDate(targetDate.getDate() + (currentWeekOfMonth - 1) * 7);
-          
+          targetDate.setDate(
+            targetDate.getDate() + (currentWeekOfMonth - 1) * 7
+          );
+
           // Verifica se ainda estamos no mesmo mês
           if (targetDate.getMonth() !== (today.getMonth() + 1) % 12) {
             // Se passou para o mês seguinte, volta para a última ocorrência do dia da semana no mês desejado
             targetDate.setDate(1);
             targetDate.setMonth((today.getMonth() + 1) % 12);
-            
+
             let lastOccurrence = 0;
-            const daysInMonth = new Date(targetDate.getFullYear(), targetDate.getMonth() + 1, 0).getDate();
-            
+            const daysInMonth = new Date(
+              targetDate.getFullYear(),
+              targetDate.getMonth() + 1,
+              0
+            ).getDate();
+
             for (let i = 1; i <= daysInMonth; i++) {
               targetDate.setDate(i);
               if (targetDate.getDay() === currentDay) {
                 lastOccurrence = i;
               }
             }
-            
+
             targetDate.setDate(lastOccurrence);
           }
         }
-        
+
         // Mantém a mesma hora do dia
         targetDate.setHours(today.getHours(), today.getMinutes(), 0, 0);
         return targetDate.getTime();
@@ -231,17 +260,18 @@ function MainView(): React.ReactElement {
         const today = new Date();
         const minMonths = settings.somedayMinMonths;
         const maxMonths = settings.somedayMaxMonths;
-        
+
         // Gera um número aleatório de meses entre min e max
-        const randomMonths = Math.floor(Math.random() * (maxMonths - minMonths + 1)) + minMonths;
-        
+        const randomMonths =
+          Math.floor(Math.random() * (maxMonths - minMonths + 1)) + minMonths;
+
         // Gera um número aleatório de dias entre 0 e 30
         const randomDays = Math.floor(Math.random() * 30);
-        
+
         const targetDate = new Date();
         targetDate.setMonth(today.getMonth() + randomMonths);
         targetDate.setDate(today.getDate() + randomDays);
-        
+
         // Mantém a mesma hora do dia
         return targetDate.getTime();
       },
@@ -299,10 +329,10 @@ function MainView(): React.ReactElement {
   }
 
   return (
-    <div className='card w-[36rem] bg-base-100 shadow-md rounded-xl'>
+    <div className='card w-[36rem] rounded-xl bg-base-100 shadow-md'>
       <div className='card-body p-6'>
         <div className='mb-5 flex items-center justify-between'>
-          <h2 className='card-title flex items-center text-delayo-orange font-medium'>
+          <h2 className='card-title flex items-center font-medium text-delayo-orange'>
             <FontAwesomeIcon
               icon={faHourglassHalf}
               className='mr-2 h-5 w-5 text-delayo-orange'
@@ -315,8 +345,11 @@ function MainView(): React.ReactElement {
             onClick={toggleTheme}
             aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
           >
-            <FontAwesomeIcon icon={theme === 'light' ? 'moon' : 'sun'} 
-            className={theme === 'light' ? 'text-delayo-purple' : 'text-delayo-yellow'}
+            <FontAwesomeIcon
+              icon={theme === 'light' ? 'moon' : 'sun'}
+              className={
+                theme === 'light' ? 'text-delayo-purple' : 'text-delayo-yellow'
+              }
             />
           </button>
         </div>
@@ -344,20 +377,32 @@ function MainView(): React.ReactElement {
             <div key={option.id} className='card'>
               <button
                 type='button'
-                className='btn h-24 flex-col justify-center items-center border-none bg-base-200/70 hover:bg-base-200 p-3 rounded-xl shadow-sm transition-all duration-200 group'
+                className='group btn h-24 flex-col items-center justify-center rounded-xl border-none bg-base-200/70 p-3 shadow-sm transition-all duration-200 hover:bg-base-200'
                 onClick={() => handleDelay(option)}
               >
-                <FontAwesomeIcon 
-                  icon={option.id === 'later_today' ? 'mug-hot' : 
-                        option.id === 'tonight' ? 'moon' : 
-                        option.id === 'tomorrow' ? 'cloud-sun' : 
-                        option.id === 'weekend' ? 'couch' : 
-                        option.id === 'next_week' ? 'briefcase' : 
-                        option.id === 'next_month' ? 'envelope' : 
-                        option.id === 'someday' ? 'umbrella-beach' : 'clock'} 
-                  className='h-5 w-5 mb-3 text-neutral-400 group-hover:text-delayo-orange transition-all duration-300 ease-in-out transform group-hover:scale-110'
+                <FontAwesomeIcon
+                  icon={
+                    option.id === 'later_today'
+                      ? 'mug-hot'
+                      : option.id === 'tonight'
+                        ? 'moon'
+                        : option.id === 'tomorrow'
+                          ? 'cloud-sun'
+                          : option.id === 'weekend'
+                            ? 'couch'
+                            : option.id === 'next_week'
+                              ? 'briefcase'
+                              : option.id === 'next_month'
+                                ? 'envelope'
+                                : option.id === 'someday'
+                                  ? 'umbrella-beach'
+                                  : 'clock'
+                  }
+                  className='mb-3 h-5 w-5 transform text-neutral-400 transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:text-delayo-orange'
                 />
-                <span className='text-xs text-center font-medium text-base-content/80 group-hover:text-base-content'>{option.label}</span>
+                <span className='text-center text-xs font-medium text-base-content/80 group-hover:text-base-content'>
+                  {option.label}
+                </span>
               </button>
             </div>
           ))}
@@ -366,14 +411,16 @@ function MainView(): React.ReactElement {
           <div className='card'>
             <Link
               to='/custom-delay'
-              className='btn h-24 flex-col justify-center items-center border-none bg-base-200/70 hover:bg-base-200 p-3 rounded-xl shadow-sm transition-all duration-200 group'
+              className='group btn h-24 flex-col items-center justify-center rounded-xl border-none bg-base-200/70 p-3 shadow-sm transition-all duration-200 hover:bg-base-200'
               viewTransition={{ types: ['slide-left'] }}
             >
-              <FontAwesomeIcon 
-                icon="calendar-days" 
-                className='h-5 w-5 mb-3 text-neutral-400 group-hover:text-delayo-orange transition-all duration-300 ease-in-out transform group-hover:scale-110' 
+              <FontAwesomeIcon
+                icon='calendar-days'
+                className='mb-3 h-5 w-5 transform text-neutral-400 transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:text-delayo-orange'
               />
-              <span className='text-xs text-center font-medium text-base-content/80 group-hover:text-base-content'>Escolher Data/Hora</span>
+              <span className='text-center text-xs font-medium text-base-content/80 group-hover:text-base-content'>
+                Escolher Data/Hora
+              </span>
             </Link>
           </div>
 
@@ -381,14 +428,16 @@ function MainView(): React.ReactElement {
           <div className='card'>
             <Link
               to='/recurring-delay'
-              className='btn h-24 flex-col justify-center items-center border-none bg-base-200/70 hover:bg-base-200 p-3 rounded-xl shadow-sm transition-all duration-200 group'
+              className='group btn h-24 flex-col items-center justify-center rounded-xl border-none bg-base-200/70 p-3 shadow-sm transition-all duration-200 hover:bg-base-200'
               viewTransition={{ types: ['slide-left'] }}
             >
-              <FontAwesomeIcon 
-                icon="repeat" 
-                className='h-5 w-5 mb-3 text-neutral-400 group-hover:text-delayo-orange transition-all duration-300 ease-in-out transform group-hover:scale-110' 
+              <FontAwesomeIcon
+                icon='repeat'
+                className='mb-3 h-5 w-5 transform text-neutral-400 transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:text-delayo-orange'
               />
-              <span className='text-xs text-center font-medium text-base-content/80 group-hover:text-base-content'>Adiamento Recorrente</span>
+              <span className='text-center text-xs font-medium text-base-content/80 group-hover:text-base-content'>
+                Adiamento Recorrente
+              </span>
             </Link>
           </div>
         </div>
