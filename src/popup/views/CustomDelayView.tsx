@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from '@tanstack/react-router';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 function CustomDelayView(): React.ReactElement {
   const [activeTab, setActiveTab] = useState<chrome.tabs.Tab | null>(null);
@@ -56,7 +57,7 @@ function CustomDelayView(): React.ReactElement {
       chrome.storage &&
       chrome.storage.local
     ) {
-      await chrome.storage.local.get({ delayedTabs: [] }, async (data) => {
+      chrome.storage.local.get({ delayedTabs: [] }, async (data) => {
         const { delayedTabs } = data;
         delayedTabs.push(tabInfo);
         await chrome.storage.local.set({ delayedTabs });
@@ -92,37 +93,24 @@ function CustomDelayView(): React.ReactElement {
   }
 
   return (
-    <div className='card w-80 rounded-xl bg-base-100 shadow-md'>
+    <div className='card w-80 rounded-none bg-base-300 shadow-md'>
       <div className='card-body p-6'>
         <div className='mb-5 flex items-center'>
           <Link
             to='/'
-            className='btn btn-circle btn-ghost btn-sm mr-3 transition-all duration-200 hover:bg-base-200'
+            className='btn btn-circle btn-ghost btn-sm mr-3 transition-all duration-200 hover:bg-base-100'
             aria-label='Voltar ao menu principal'
             viewTransition={{ types: ['slide-right'] }}
           >
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              fill='none'
-              viewBox='0 0 24 24'
-              strokeWidth={1.5}
-              stroke='currentColor'
-              className='h-5 w-5'
-            >
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                d='M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18'
-              />
-            </svg>
+            <FontAwesomeIcon icon='arrow-left' />
           </Link>
-          <h2 className='card-title font-medium text-delayo-orange'>
+          <h2 className='card-title font-bold text-delayo-orange'>
             Escolher Data/Hora
           </h2>
         </div>
 
         {activeTab && (
-          <div className='mb-5 flex items-center rounded-lg bg-base-200/50 p-4 shadow-sm transition-all duration-200 hover:bg-base-200/80'>
+          <div className='mb-5 flex items-center rounded-lg bg-base-100/50 p-4 shadow-sm transition-all duration-200 hover:bg-base-100/80'>
             {activeTab.favIconUrl && (
               <img
                 src={activeTab.favIconUrl}
@@ -152,7 +140,7 @@ function CustomDelayView(): React.ReactElement {
           </label>
           <input
             type='datetime-local'
-            className='input input-bordered w-full border-none bg-base-200/70 shadow-sm transition-all duration-200 focus:bg-base-200'
+            className='input input-bordered w-full border-none bg-base-100/50 shadow-sm transition-all duration-200 focus:bg-base-100/80'
             value={customDate}
             onChange={(e) => setCustomDate(e.target.value)}
             min={new Date().toISOString().slice(0, 16)}

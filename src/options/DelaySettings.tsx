@@ -1,31 +1,31 @@
 import React, { useEffect, useState } from 'react';
 
-// Define o tipo para as configurações de adiamento
+// Define the type for delay settings
 interface DelaySettings {
-  laterToday: number; // horas
-  tonightTime: string; // formato HH:MM
-  tomorrowTime: string; // formato HH:MM
+  laterToday: number; // hours
+  tonightTime: string; // format HH:MM
+  tomorrowTime: string; // format HH:MM
   weekendDay: 'saturday' | 'sunday';
-  weekendTime: string; // formato HH:MM
-  nextWeekDay: number; // 0-6 (0 = domingo, 1 = segunda, etc.)
-  nextWeekTime: string; // formato HH:MM
-  nextMonthSameDay: boolean; // se true, mesmo dia do mês; se false, mesmo dia da semana
-  somedayMinMonths: number; // mínimo de meses para "Um Dia"
-  somedayMaxMonths: number; // máximo de meses para "Um Dia"
+  weekendTime: string; // format HH:MM
+  nextWeekDay: number; // 0-6 (0 = Sunday, 1 = Monday, etc.)
+  nextWeekTime: string; // format HH:MM
+  nextMonthSameDay: boolean; // if true, same day of month; if false, same day of week
+  somedayMinMonths: number; // minimum months for "Someday"
+  somedayMaxMonths: number; // maximum months for "Someday"
 }
 
-// Valores padrão para as configurações
+// Default values for settings
 const defaultSettings: DelaySettings = {
-  laterToday: 3, // 3 horas mais tarde
-  tonightTime: '18:00', // 18h
-  tomorrowTime: '09:00', // 9h
+  laterToday: 3, // 3 hours later
+  tonightTime: '18:00', // 6 PM
+  tomorrowTime: '09:00', // 9 AM
   weekendDay: 'saturday',
-  weekendTime: '09:00', // 9h
-  nextWeekDay: 1, // Segunda-feira
-  nextWeekTime: '09:00', // 9h
+  weekendTime: '09:00', // 9 AM
+  nextWeekDay: 1, // Monday
+  nextWeekTime: '09:00', // 9 AM
   nextMonthSameDay: true,
-  somedayMinMonths: 3, // mínimo 3 meses
-  somedayMaxMonths: 12, // máximo 12 meses
+  somedayMinMonths: 3, // minimum 3 months
+  somedayMaxMonths: 12, // maximum 12 months
 };
 
 function DelaySettings(): React.ReactElement {
@@ -33,7 +33,7 @@ function DelaySettings(): React.ReactElement {
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
 
-  // Carrega as configurações salvas
+  // Load saved settings
   useEffect(() => {
     const loadSettings = async (): Promise<void> => {
       try {
@@ -51,23 +51,23 @@ function DelaySettings(): React.ReactElement {
     loadSettings();
   }, []);
 
-  // Salva as configurações
+  // Save settings
   const saveSettings = async (): Promise<void> => {
     try {
       await chrome.storage.local.set({ delaySettings: settings });
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (error) {
-      // Silenciosamente trata o erro
+      // error handling
     }
   };
 
-  // Reseta as configurações para os valores padrão
+  // Reset settings to default values
   const resetSettings = (): void => {
     setSettings(defaultSettings);
   };
 
-  // Atualiza um campo específico das configurações
+  // Update a specific field in the settings
   const updateSetting = <K extends keyof DelaySettings>(
     key: K,
     value: DelaySettings[K]
@@ -87,12 +87,12 @@ function DelaySettings(): React.ReactElement {
   }
 
   return (
-    <div className='card w-full bg-base-100 shadow-xl'>
+    <div className='card w-full bg-base-100 border border-base-200 shadow-sm hover:shadow-md transition-shadow duration-300'>
       <div className='card-body'>
         <h2 className='card-title mb-4'>Configurações de Adiamento</h2>
 
         <div className='space-y-4'>
-          {/* Hoje Mais Tarde */}
+          {/* Later Today */}
           <div className='form-control'>
             <label className='label'>
               <span className='label-text font-medium'>Hoje Mais Tarde</span>
@@ -112,7 +112,7 @@ function DelaySettings(): React.ReactElement {
             </div>
           </div>
 
-          {/* Hoje à Noite */}
+          {/* Tonight */}
           <div className='form-control'>
             <label className='label'>
               <span className='label-text font-medium'>Hoje à Noite</span>
@@ -125,7 +125,7 @@ function DelaySettings(): React.ReactElement {
             />
           </div>
 
-          {/* Amanhã */}
+          {/* Tomorrow */}
           <div className='form-control'>
             <label className='label'>
               <span className='label-text font-medium'>Amanhã</span>
@@ -138,7 +138,7 @@ function DelaySettings(): React.ReactElement {
             />
           </div>
 
-          {/* Este Fim de Semana */}
+          {/* This Weekend */}
           <div className='form-control'>
             <label className='label'>
               <span className='label-text font-medium'>Este Fim de Semana</span>
@@ -166,7 +166,7 @@ function DelaySettings(): React.ReactElement {
             </div>
           </div>
 
-          {/* Próxima Semana */}
+          {/* Next Week */}
           <div className='form-control'>
             <label className='label'>
               <span className='label-text font-medium'>Próxima Semana</span>
@@ -196,7 +196,7 @@ function DelaySettings(): React.ReactElement {
             </div>
           </div>
 
-          {/* Próximo Mês */}
+          {/* Next Month */}
           <div className='form-control'>
             <label className='label'>
               <span className='label-text font-medium'>Próximo Mês</span>
@@ -229,7 +229,7 @@ function DelaySettings(): React.ReactElement {
             </div>
           </div>
 
-          {/* Um Dia (Aleatório) */}
+          {/* Someday (Random) */}
           <div className='form-control'>
             <label className='label'>
               <span className='label-text font-medium'>Um Dia (Aleatório)</span>

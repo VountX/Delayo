@@ -9,6 +9,7 @@ import DelaySettings from './DelaySettings';
 function Options(): React.ReactElement {
   const [delayedTabItems, setDelayedTabs] = useState<DelayedTab[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'tabs' | 'settings'>('tabs');
   const { theme, toggleTheme } = useTheme();
 
   // Moved loadDelayedTabs before its usage to fix hoisting issue
@@ -89,28 +90,27 @@ function Options(): React.ReactElement {
   );
 
   const renderEmptyState = (): React.ReactElement => (
-    <div className='card w-full bg-base-100 shadow-xl'>
+    <div className='card w-full bg-base-100 border border-base-200 shadow-sm hover:shadow-md transition-shadow duration-300'>
       <div className='card-body text-center'>
-        <h2 className='card-title justify-center'>No Delayed Tabs</h2>
+        <h2 className='card-title justify-center'>Sem abas adiadas</h2>
         <p>
-          You don&apos;t have any delayed tabs at the moment. Delay a tab by
-          clicking the extension icon.
+          Você não tem nenhuma aba adiada no momento. Adie uma aba clicando no ícone da extensão.
         </p>
       </div>
     </div>
   );
 
   const renderTabsTable = (): React.ReactElement => (
-    <div className='card w-full bg-base-100 shadow-xl'>
+    <div className='card w-full bg-base-100 border border-base-200 shadow-sm hover:shadow-md transition-shadow duration-300'>
       <div className='card-body p-0'>
         <div className='w-full overflow-x-auto'>
           <table className='table table-zebra w-full'>
             <thead>
               <tr>
-                <th className='w-1/4'>Tab</th>
-                <th className='w-1/4'>Delay Until</th>
-                <th className='w-1/6'>Time Left</th>
-                <th className='w-1/3'>Actions</th>
+                <th className='w-1/4'>Abas</th>
+                <th className='w-1/4'>Adiada até</th>
+                <th className='w-1/6'>Tempo restante</th>
+                <th className='w-1/3'>Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -144,7 +144,8 @@ function Options(): React.ReactElement {
                     <div className='flex space-x-2'>
                       <button
                         type='button'
-                        className='btn btn-primary btn-sm'
+                        className='btn btn-sm'
+                        style={{ backgroundColor: '#ffb26f', color: '#3B1B00' }}
                         onClick={() => wakeTabNow(tab)}
                       >
                         Wake Now
@@ -197,15 +198,21 @@ function Options(): React.ReactElement {
       </div>
 
       <div className='tabs mb-6'>
-        <a className='tab-bordered tab tab-active'>Abas Adormecidas</a>
-        <a className='tab-bordered tab'>Configurações</a>
+        <a
+          className={`tab tab-bordered ${activeTab === 'tabs' ? 'tab-active !border-delayo-orange !border-b-[3px]' : ''}`}
+          onClick={() => setActiveTab('tabs')}
+        >
+          <span className='font-bold'>Abas Adiadas</span>
+        </a>
+        <a
+          className={`tab tab-bordered ${activeTab === 'settings' ? 'tab-active !border-delayo-orange !border-b-[3px]' : ''}`}
+          onClick={() => setActiveTab('settings')}
+        >
+          <span className='font-bold'>Configurações</span>
+        </a>
       </div>
 
-      {content}
-
-      <div className='mt-8'>
-        <DelaySettings />
-      </div>
+      {activeTab === 'tabs' ? content : <DelaySettings />}
 
       <div className='mt-6 text-center text-sm'>
         <div className='flex flex-col items-center justify-center gap-2'>

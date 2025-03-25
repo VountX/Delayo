@@ -1,5 +1,5 @@
 import daisyui from 'daisyui';
-
+import daisyui0 from 'daisyui/src/theming/themes';
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -7,26 +7,34 @@ export default {
   theme: {
     extend: {
       colors: {
-        'delayo-orange': '#FF7A00', // Cor laranja elegante e moderna
+        'delayo-orange': '#FF7A00',
         'delayo-purple': '#8A05BE',
-        'delayo-yellow': '#FFD700', // Amarelo substituindo o laranja
+        'delayo-yellow': '#FFD700',
       },
     },
   },
   plugins: [daisyui],
   daisyui: {
     themes: [
-      'light',
+      {
+        light: {
+          ...daisyui0.light,
+          'primary': '#FF7A00',
+          'primary-content': '#3B1B00',
+        }
+      },
       {
         dark: {
-          ...require('daisyui/src/theming/themes')['dark'],
-          'base-100': '#1a1e2e', // Fundo do popup um pouco mais claro e com tom azulado
-          'base-200': '#2a3142', // Fundo dos cards mais claro que o base-100 para criar contraste
-          'base-300': '#3a4255', // Elementos de destaque ainda mais claros
-          'base-content': '#e2e8f0', // Texto principal com tom suave
+          ...daisyui0.dark,
+          'base-100': '#1a1e2e',
+          'base-200': '#2a3142',
+          'base-300': '#3a4255',
+          'base-content': '#e2e8f0',
+          'primary': '#FF7A00',
+          'primary-content': '#e2e8f0',
         },
       },
     ],
-    darkTheme: 'dark', // name of one of the included themes for dark mode
+    darkTheme: 'dark',
   },
 };

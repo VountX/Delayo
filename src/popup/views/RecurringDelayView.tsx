@@ -1,6 +1,7 @@
 import React, { useEffect, useId, useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { DelayedTab, RecurrencePattern } from '@types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 // Accessible Form Control component using function declaration with destructured props
 function FormControl({
@@ -194,37 +195,24 @@ function RecurringDelayView(): React.ReactElement {
   }
 
   return (
-    <div className='card w-80 bg-base-100 shadow-xl'>
+    <div className='card w-80 rounded-none bg-base-300 shadow-xl'>
       <div className='card-body p-5'>
         <div className='mb-4 flex items-center'>
           <Link
             to='/'
-            className='btn btn-circle btn-ghost btn-sm mr-2'
+            className='btn btn-circle btn-ghost btn-sm mr-3 transition-all duration-200 hover:bg-base-100'
             aria-label='Voltar ao menu principal'
             viewTransition={{ types: ['slide-right'] }}
           >
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              fill='none'
-              viewBox='0 0 24 24'
-              strokeWidth={2}
-              stroke='currentColor'
-              className='h-6 w-6'
-            >
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                d='M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18'
-              />
-            </svg>
+            <FontAwesomeIcon icon='arrow-left' />
           </Link>
-          <h2 className='card-title text-delayo-orange'>
+          <h2 className='card-title font-bold text-delayo-orange'>
             Adiamento Recorrente
           </h2>
         </div>
 
         {activeTab && (
-          <div className='mb-4 flex items-center rounded-lg bg-base-100 p-3 shadow-sm'>
+          <div className='mb-4 flex items-center rounded-lg bg-base-100/50 p-4 shadow-sm transition-all duration-200 hover:bg-base-100/80'>
             {activeTab.favIconUrl && (
               <img
                 src={activeTab.favIconUrl}
@@ -236,10 +224,10 @@ function RecurringDelayView(): React.ReactElement {
               />
             )}
             <div className='overflow-hidden'>
-              <div className='truncate text-sm font-medium'>
+              <div className='truncate text-sm font-medium text-base-content/80'>
                 {activeTab.title}
               </div>
-              <div className='truncate text-xs text-gray-500'>
+              <div className='truncate text-xs text-base-content/60'>
                 {activeTab.url}
               </div>
             </div>
@@ -249,7 +237,7 @@ function RecurringDelayView(): React.ReactElement {
         <FormControl label='Padrão de Recorrência'>
           <select
             id={patternId}
-            className='select select-bordered w-full'
+            className='select select-bordered w-full border-none bg-base-100/50 shadow-sm transition-all duration-200 focus:bg-base-100/80'
             value={recurrenceType}
             onChange={(e) =>
               setRecurrenceType(e.target.value as RecurrencePattern['type'])
@@ -267,7 +255,7 @@ function RecurringDelayView(): React.ReactElement {
           <input
             id={timeId}
             type='time'
-            className='input input-bordered w-full'
+            className='input input-bordered w-full border-none bg-base-100/50 shadow-sm transition-all duration-200 focus:bg-base-100/80'
             value={time}
             onChange={(e) => setTime(e.target.value)}
           />
@@ -300,7 +288,7 @@ function RecurringDelayView(): React.ReactElement {
             <input
               id={dayOfMonthId}
               type='number'
-              className='input input-bordered w-full'
+              className='input input-bordered w-full border-none bg-base-100/50 shadow-sm transition-all duration-200 focus:bg-base-100/80'
               min='1'
               max='31'
               value={dayOfMonth}
@@ -317,7 +305,7 @@ function RecurringDelayView(): React.ReactElement {
           <input
             id={endDateId}
             type='date'
-            className='input input-bordered w-full'
+            className='input input-bordered w-full border-none bg-base-100/50 shadow-sm transition-all duration-200 focus:bg-base-100/80'
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
             min={new Date().toISOString().split('T')[0]}

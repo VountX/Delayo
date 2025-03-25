@@ -329,33 +329,46 @@ function MainView(): React.ReactElement {
   }
 
   return (
-    <div className='card w-[36rem] rounded-xl bg-base-100 shadow-md'>
+    <div className='card w-[36rem] rounded-none bg-base-300 shadow-md'>
       <div className='card-body p-6'>
         <div className='mb-5 flex items-center justify-between'>
-          <h2 className='card-title flex items-center font-medium text-delayo-orange'>
+          <h2 className='card-title flex items-center font-bold text-delayo-orange'>
             <FontAwesomeIcon
               icon={faHourglassHalf}
               className='mr-2 h-5 w-5 text-delayo-orange'
             />
             Delayo
           </h2>
-          <button
-            type='button'
-            className='btn btn-circle btn-ghost btn-sm transition-all duration-200 hover:bg-base-200'
-            onClick={toggleTheme}
-            aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-          >
-            <FontAwesomeIcon
-              icon={theme === 'light' ? 'moon' : 'sun'}
-              className={
-                theme === 'light' ? 'text-delayo-purple' : 'text-delayo-yellow'
-              }
-            />
-          </button>
+          <div className='flex items-center space-x-2'>
+            <Link
+              to='/settings'
+              className='btn btn-circle btn-ghost btn-sm transition-all duration-200 hover:bg-base-100'
+              viewTransition={{ types: ['slide-left'] }}
+              aria-label='Settings'
+            >
+              <FontAwesomeIcon
+                icon='gear'
+                className='text-neutral-400 hover:text-delayo-orange'
+              />
+            </Link>
+            <button
+              type='button'
+              className='btn btn-circle btn-ghost btn-sm transition-all duration-200 hover:bg-base-100'
+              onClick={toggleTheme}
+              aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+            >
+              <FontAwesomeIcon
+                icon={theme === 'light' ? 'moon' : 'sun'}
+                className={
+                  theme === 'light' ? 'text-delayo-purple' : 'text-delayo-yellow'
+                }
+              />
+            </button>
+          </div>
         </div>
 
         {activeTab && (
-          <div className='mb-5 flex items-center rounded-lg bg-base-200/50 p-4 shadow-sm transition-all duration-200 hover:bg-base-200/80'>
+          <div className='mb-5 flex items-center rounded-lg bg-base-100/50 p-4 shadow-sm transition-all duration-200 hover:bg-base-100/80'>
             {activeTab.favIconUrl && (
               <img
                 src={activeTab.favIconUrl}
@@ -377,7 +390,7 @@ function MainView(): React.ReactElement {
             <div key={option.id} className='card'>
               <button
                 type='button'
-                className='group btn h-24 flex-col items-center justify-center rounded-xl border-none bg-base-200/70 p-3 shadow-sm transition-all duration-200 hover:bg-base-200'
+                className='group btn h-24 flex-col items-center justify-center rounded-xl border-none bg-base-100/70 p-3 shadow-sm transition-all duration-200 hover:bg-base-100'
                 onClick={() => handleDelay(option)}
               >
                 <FontAwesomeIcon
@@ -411,7 +424,7 @@ function MainView(): React.ReactElement {
           <div className='card'>
             <Link
               to='/custom-delay'
-              className='group btn h-24 flex-col items-center justify-center rounded-xl border-none bg-base-200/70 p-3 shadow-sm transition-all duration-200 hover:bg-base-200'
+              className='group btn h-24 flex-col items-center justify-center rounded-xl border-none bg-base-100/70 p-3 shadow-sm transition-all duration-200 hover:bg-base-100'
               viewTransition={{ types: ['slide-left'] }}
             >
               <FontAwesomeIcon
@@ -428,7 +441,7 @@ function MainView(): React.ReactElement {
           <div className='card'>
             <Link
               to='/recurring-delay'
-              className='group btn h-24 flex-col items-center justify-center rounded-xl border-none bg-base-200/70 p-3 shadow-sm transition-all duration-200 hover:bg-base-200'
+              className='group btn h-24 flex-col items-center justify-center rounded-xl border-none bg-base-100/70 p-3 shadow-sm transition-all duration-200 hover:bg-base-100'
               viewTransition={{ types: ['slide-left'] }}
             >
               <FontAwesomeIcon

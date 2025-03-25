@@ -1,6 +1,6 @@
-// Configuração do Font Awesome
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
+  faArrowLeft,
   faBriefcase,
   faCalendarDays,
   faClock,
@@ -8,6 +8,7 @@ import {
   faCouch,
   faEnvelope,
   faFire,
+  faGear,
   faLeaf,
   faMoon,
   faMountain,
@@ -21,7 +22,6 @@ import {
   faWind,
 } from '@fortawesome/free-solid-svg-icons';
 
-// Adiciona os ícones à biblioteca do Font Awesome para uso global
 library.add(
   faMugHot,
   faMoon,
@@ -40,5 +40,7 @@ library.add(
   faWater,
   faWind,
   faMountain,
-  faTree
+  faTree,
+  faGear,
+  faArrowLeft
 );
