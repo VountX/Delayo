@@ -28,7 +28,7 @@ const defaultSettings: DelaySettings = {
   somedayMaxMonths: 12, // maximum 12 months
 };
 
-function DelaySettings(): React.ReactElement {
+function DelaySettingsComponent(): React.ReactElement {
   const [settings, setSettings] = useState<DelaySettings>(defaultSettings);
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
@@ -87,7 +87,7 @@ function DelaySettings(): React.ReactElement {
   }
 
   return (
-    <div className='card w-full bg-base-100 border border-base-200 shadow-sm hover:shadow-md transition-shadow duration-300'>
+    <div className='card w-full min-w-[650px] bg-base-200 border border-base-300 shadow-sm hover:shadow-md transition-shadow duration-300'>
       <div className='card-body'>
         <h2 className='card-title mb-4'>Configurações de Adiamento</h2>
 
@@ -303,4 +303,4 @@ function DelaySettings(): React.ReactElement {
   );
 }
 
-export default DelaySettings;
+export default DelaySettingsComponent;

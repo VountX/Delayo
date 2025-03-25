@@ -329,7 +329,7 @@ function MainView(): React.ReactElement {
   }
 
   return (
-    <div className='card w-[36rem] rounded-none bg-base-300 shadow-md'>
+    <div className='card w-[40rem] rounded-none bg-base-300 shadow-md'>
       <div className='card-body p-6'>
         <div className='mb-5 flex items-center justify-between'>
           <h2 className='card-title flex items-center font-bold text-delayo-orange'>
@@ -368,7 +368,7 @@ function MainView(): React.ReactElement {
         </div>
 
         {activeTab && (
-          <div className='mb-5 flex items-center rounded-lg bg-base-100/50 p-4 shadow-sm transition-all duration-200 hover:bg-base-100/80'>
+          <div className='mb-5 flex items-center rounded-lg bg-base-100/70 p-4 shadow-sm transition-all duration-200 hover:bg-base-100'>
             {activeTab.favIconUrl && (
               <img
                 src={activeTab.favIconUrl}

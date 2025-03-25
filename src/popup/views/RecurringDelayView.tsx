@@ -212,7 +212,7 @@ function RecurringDelayView(): React.ReactElement {
         </div>
 
         {activeTab && (
-          <div className='mb-4 flex items-center rounded-lg bg-base-100/50 p-4 shadow-sm transition-all duration-200 hover:bg-base-100/80'>
+          <div className='mb-4 flex items-center rounded-lg bg-base-100/70 p-4 shadow-sm transition-all duration-200 hover:bg-base-100'>
             {activeTab.favIconUrl && (
               <img
                 src={activeTab.favIconUrl}

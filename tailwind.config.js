@@ -10,6 +10,8 @@ export default {
         'delayo-orange': '#FF7A00',
         'delayo-purple': '#8A05BE',
         'delayo-yellow': '#FFD700',
+        // 'delayo-light-gray': '#e9e9e9',
+        // 'dalayo-dark-navy': '#10121b'
       },
     },
   },
@@ -21,6 +23,7 @@ export default {
           ...daisyui0.light,
           'primary': '#FF7A00',
           'primary-content': '#3B1B00',
+          'base-300': '#e9e9e9',
         }
       },
       {

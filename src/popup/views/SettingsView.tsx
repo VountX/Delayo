@@ -3,7 +3,7 @@ import { Link } from '@tanstack/react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import useTheme from '../../utils/useTheme';
-import DelaySettings from '../../options/DelaySettings';
+import DelaySettingsComponent from '../../options/DelaySettings';
 
 function SettingsView(): React.ReactElement {
   const { theme, toggleTheme } = useTheme();
@@ -38,7 +38,7 @@ function SettingsView(): React.ReactElement {
         </div>
 
         <div className='overflow-y-auto max-h-[400px] pr-2 pb-2'>
-          <DelaySettings />
+          <DelaySettingsComponent />
         </div>
       </div>
     </div>

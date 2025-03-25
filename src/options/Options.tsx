@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { DelayedTab } from '@types';
 import useTheme from '@utils/useTheme.tsx';
 
-import DelaySettings from './DelaySettings';
+import DelaySettingsComponent from './DelaySettings';
 
 // Defining the component as a function declaration per ESLint rule
 function Options(): React.ReactElement {
   const [delayedTabItems, setDelayedTabs] = useState<DelayedTab[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'tabs' | 'settings'>('tabs');
+  const [selectedTabs, setSelectedTabs] = useState<number[]>([]);
   const { theme, toggleTheme } = useTheme();
 
   // Moved loadDelayedTabs before its usage to fix hoisting issue
@@ -47,6 +47,7 @@ function Options(): React.ReactElement {
         await chrome.alarms.clear(`delayed-tab-${tab.id}`);
         // Update state
         setDelayedTabs(updatedTabs);
+        setSelectedTabs(selectedTabs.filter(id => id !== tab.id));
       }
     } catch (error) {
       // Silently handle error without console.error
@@ -62,6 +63,7 @@ function Options(): React.ReactElement {
       await chrome.alarms.clear(`delayed-tab-${tab.id}`);
       // Update state
       setDelayedTabs(updatedTabs);
+      setSelectedTabs(selectedTabs.filter(id => id !== tab.id));
     } catch (error) {
       // Silently handle error without console.error
     }
@@ -90,7 +92,7 @@ function Options(): React.ReactElement {
   );
 
   const renderEmptyState = (): React.ReactElement => (
-    <div className='card w-full bg-base-100 border border-base-200 shadow-sm hover:shadow-md transition-shadow duration-300'>
+    <div className='card w-full bg-base-200 border border-base-300 shadow-sm hover:shadow-md transition-shadow duration-300'>
       <div className='card-body text-center'>
         <h2 className='card-title justify-center'>Sem abas adiadas</h2>
         <p>
@@ -100,13 +102,55 @@ function Options(): React.ReactElement {
     </div>
   );
 
+  const wakeSelectedTabs = async (): Promise<void> => {
+    try {
+      const tabsToWake = delayedTabItems.filter(tab => selectedTabs.includes(tab.id));
+      for (const tab of tabsToWake) {
+        if (tab.url) {
+          await chrome.tabs.create({ url: tab.url });
+          await chrome.alarms.clear(`delayed-tab-${tab.id}`);
+        }
+      }
+      const updatedTabs = delayedTabItems.filter(tab => !selectedTabs.includes(tab.id));
+      await chrome.storage.local.set({ delayedTabs: updatedTabs });
+      setDelayedTabs(updatedTabs);
+      setSelectedTabs([]);
+    } catch (error) {
+      // Silently handle error without console.error
+    }
+  };
+
+  const toggleTabSelection = (tabId: number): void => {
+    setSelectedTabs(prev =>
+      prev.includes(tabId)
+        ? prev.filter(id => id !== tabId)
+        : [...prev, tabId]
+    );
+  };
+
   const renderTabsTable = (): React.ReactElement => (
-    <div className='card w-full bg-base-100 border border-base-200 shadow-sm hover:shadow-md transition-shadow duration-300'>
+    <div className='card w-full bg-base-200 border border-base-300 shadow-sm hover:shadow-md transition-shadow duration-300'>
       <div className='card-body p-0'>
         <div className='w-full overflow-x-auto'>
-          <table className='table table-zebra w-full'>
+          <table className='table w-full [&>tbody>tr:nth-child(odd)]:bg-base-100 [&>tbody>tr:nth-child(even)]:bg-base-300 [&>tbody>tr:hover]:bg-base-100'>
             <thead>
               <tr>
+                <th className='w-12'>
+                  <label>
+                    <input
+                      type='checkbox'
+                      className='checkbox'
+                      checked={selectedTabs.length === delayedTabItems.length && delayedTabItems.length > 0}
+                      onChange={() =>
+                        setSelectedTabs(
+                          selectedTabs.length === delayedTabItems.length
+                            ? []
+                            : delayedTabItems.map(tab => tab.id)
+                        )
+                      }
+                    />
+                  </label>
+                </th>
                 <th className='w-1/4'>Abas</th>
                 <th className='w-1/4'>Adiada até</th>
                 <th className='w-1/6'>Tempo restante</th>
@@ -116,6 +160,16 @@ function Options(): React.ReactElement {
             <tbody>
               {delayedTabItems.map((tab) => (
                 <tr key={tab.id}>
+                  <td>
+                    <label>
+                      <input
+                        type='checkbox'
+                        className='checkbox'
+                        checked={selectedTabs.includes(tab.id)}
+                        onChange={() => toggleTabSelection(tab.id)}
+                      />
+                    </label>
+                  </td>
                   <td>
                     <div className='flex items-center space-x-2'>
                       {tab.favicon && (
@@ -163,6 +217,17 @@ function Options(): React.ReactElement {
               ))}
             </tbody>
           </table>
+          {selectedTabs.length > 0 && (
+            <div className='p-4 flex justify-end'>
+              <button
+                type='button'
+                className='btn btn-primary'
+                onClick={wakeSelectedTabs}
+              >
+                Acordar {selectedTabs.length} {selectedTabs.length === 1 ? 'Aba' : 'Abas'}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -179,21 +244,27 @@ function Options(): React.ReactElement {
   }
 
   return (
-    <div className='container mx-auto max-w-3xl p-4'>
+    <div className='container mx-auto max-w-fit p-4'>
       <div className='mb-6 flex items-center justify-between'>
         <h1 className='text-2xl font-bold'>Gerenciar Abas Adormecidas</h1>
         <button
           type='button'
-          className='btn btn-outline'
+          className='btn btn-circle btn-ghost btn-sm transition-all duration-200 hover:bg-base-100'
           onClick={toggleTheme}
           aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
         >
-          <FontAwesomeIcon
-            icon={theme === 'light' ? 'moon' : 'sun'}
-            className={theme === 'light' ? 'text-delayo-purple' : ''}
-            style={theme === 'light' ? {} : { color: '#FFBF00' }}
-          />{' '}
-          {theme === 'light' ? ' Modo Escuro' : ' Modo Claro'}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox={theme === 'light' ? '0 0 384 512' : '0 0 512 512'}
+            className="h-5 w-5"
+            fill={theme === 'light' ? '#8A05BE' : '#FFD700'}
+          >
+            {theme === 'light' ? (
+              <path d="M223.5 32C100 32 0 132.3 0 256S100 480 223.5 480c60.6 0 115.5-24.2 155.8-63.4c5-4.9 6.3-12.5 3.1-18.7s-10.1-9.7-17-8.5c-9.8 1.7-19.8 2.6-30.1 2.6c-96.9 0-175.5-78.8-175.5-176c0-65.8 36-123.1 89.3-153.3c6.1-3.5 9.2-10.5 7.7-17.3s-7.3-11.9-14.3-12.5c-6.3-.5-12.6-.8-19-.8z" />
+            ) : (
+              <path d="M361.5 1.2c5 2.1 8.6 6.6 9.6 11.9L391 121l107.9 19.8c5.3 1 9.8 4.6 11.9 9.6s1.5 10.7-1.6 15.2L446.9 256l62.3 90.3c3.1 4.5 3.7 10.2 1.6 15.2s-6.6 8.6-11.9 9.6L391 391 371.1 498.9c-1 5.3-4.6 9.8-9.6 11.9s-10.7 1.5-15.2-1.6L256 446.9l-90.3 62.3c-4.5 3.1-10.2 3.7-15.2 1.6s-8.6-6.6-9.6-11.9L121 391 13.1 371.1c-5.3-1-9.8-4.6-11.9-9.6s-1.5-10.7 1.6-15.2L65.1 256 2.8 165.7c-3.1-4.5-3.7-10.2-1.6-15.2s6.6-8.6 11.9-9.6L121 121 140.9 13.1c1-5.3 4.6-9.8 9.6-11.9s10.7-1.5 15.2 1.6L256 65.1 346.3 2.8c4.5-3.1 10.2-3.7 15.2-1.6zM160 256a96 96 0 1 1 192 0 96 96 0 1 1 -192 0zm224 0a128 128 0 1 0 -256 0 128 128 0 1 0 256 0z" />
+            )}
+          </svg>
         </button>
       </div>
 
@@ -212,7 +283,7 @@ function Options(): React.ReactElement {
         </a>
       </div>
 
-      {activeTab === 'tabs' ? content : <DelaySettings />}
+      {activeTab === 'tabs' ? content : <DelaySettingsComponent />}
 
       <div className='mt-6 text-center text-sm'>
         <div className='flex flex-col items-center justify-center gap-2'>
