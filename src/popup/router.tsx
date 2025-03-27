@@ -12,6 +12,7 @@ import MainView from './views/MainView';
 import NotFoundView from './views/NotFoundView';
 import RecurringDelayView from './views/RecurringDelayView';
 import SettingsView from './views/SettingsView';
+import ManageTabsView from './views/ManageTabsView';
 
 // Define the root route
 const rootRoute = createRootRoute({
@@ -43,12 +44,19 @@ const settingsRoute = createRoute({
   component: SettingsView,
 });
 
+const manageTabsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/manage-tabs',
+  component: ManageTabsView,
+});
+
 // Create the route tree using the routes
 const routeTree = rootRoute.addChildren([
   mainRoute,
   customDelayRoute,
   recurringDelayRoute,
   settingsRoute,
+  manageTabsRoute,
 ]);
 
 // Create a memory history instance for Chrome extension environment

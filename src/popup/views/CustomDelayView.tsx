@@ -4,52 +4,89 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 function CustomDelayView(): React.ReactElement {
   const [activeTab, setActiveTab] = useState<chrome.tabs.Tab | null>(null);
+  const [highlightedTabs, setHighlightedTabs] = useState<chrome.tabs.Tab[]>([]);
+  const [allWindowTabs, setAllWindowTabs] = useState<chrome.tabs.Tab[]>([]);
+  const [selectedMode, setSelectedMode] = useState<'active' | 'highlighted' | 'window'>('active');
   const [loading, setLoading] = useState(true);
   const [customDate, setCustomDate] = useState<string>(
     new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 16)
   );
 
   useEffect(() => {
-    const getCurrentTab = async (): Promise<void> => {
+    const getTabs = async (): Promise<void> => {
       try {
         if (typeof chrome !== 'undefined' && chrome.tabs && chrome.tabs.query) {
+          // Obter a aba ativa
           const [tab] = await chrome.tabs.query({
             active: true,
             currentWindow: true,
           });
           setActiveTab(tab);
+          
+          // Obter abas destacadas (selecionadas pelo usuário)
+          const highlighted = await chrome.tabs.query({
+            highlighted: true,
+            currentWindow: true,
+          });
+          setHighlightedTabs(highlighted);
+          
+          // Obter o modo de seleção da tela principal
+          const { selectedMode: mainViewMode } = await chrome.storage.local.get('selectedMode');
+          if (mainViewMode) {
+            setSelectedMode(mainViewMode);
+          } else if (highlighted.length > 1) {
+            setSelectedMode('highlighted');
+          } else {
+            setSelectedMode('active');
+          }
+          
+          // Obter todas as abas da janela atual
+          const allTabs = await chrome.tabs.query({
+            currentWindow: true,
+          });
+          setAllWindowTabs(allTabs);
         } else {
-          // Development mode mock data
-          setActiveTab({
+          // Modo de desenvolvimento
+          const mockTab = {
             id: 123,
             url: 'https://example.com',
             title: 'Example Page (DEV MODE)',
             favIconUrl: 'https://www.google.com/favicon.ico',
-          } as chrome.tabs.Tab);
+          } as chrome.tabs.Tab;
+          
+          setActiveTab(mockTab);
+          setHighlightedTabs([mockTab]);
+          setAllWindowTabs([mockTab]);
         }
       } catch (error) {
-        console.error('Error getting tab:', error);
+        console.error('Error getting tabs:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    getCurrentTab();
+    getTabs();
   }, []);
 
+  // Função para obter as abas a serem adiadas com base no modo selecionado
+  const getTabsToDelay = (): chrome.tabs.Tab[] => {
+    switch (selectedMode) {
+      case 'active':
+        return activeTab ? [activeTab] : [];
+      case 'highlighted':
+        return highlightedTabs;
+      case 'window':
+        return allWindowTabs;
+      default:
+        return activeTab ? [activeTab] : [];
+    }
+  };
+
   const handleDelay = async (): Promise<void> => {
-    if (!activeTab || !activeTab.id) return;
+    const tabsToDelay = getTabsToDelay();
+    if (tabsToDelay.length === 0) return;
 
     const wakeTime = new Date(customDate).getTime();
-
-    const tabInfo = {
-      id: activeTab.id,
-      url: activeTab.url,
-      title: activeTab.title,
-      favicon: activeTab.favIconUrl,
-      createdAt: Date.now(),
-      wakeTime,
-    };
 
     // Save delayed tab info to storage
     if (
@@ -59,28 +96,50 @@ function CustomDelayView(): React.ReactElement {
     ) {
       chrome.storage.local.get({ delayedTabs: [] }, async (data) => {
         const { delayedTabs } = data;
-        delayedTabs.push(tabInfo);
+        const tabIds: number[] = [];
+        
+        // Processar cada aba a ser adiada
+        for (const tab of tabsToDelay) {
+          if (!tab.id) continue;
+          
+          const tabInfo = {
+            id: tab.id,
+            url: tab.url,
+            title: tab.title,
+            favicon: tab.favIconUrl,
+            createdAt: Date.now(),
+            wakeTime,
+          };
+
+          // Adicionar à lista de abas adiadas
+          delayedTabs.push(tabInfo);
+          
+          // Criar alarme para esta aba
+          if (chrome.alarms) {
+            await chrome.alarms.create(`delayed-tab-${tabInfo.id}`, {
+              when: wakeTime,
+            });
+          }
+          
+          // Adicionar ID da aba à lista para fechar
+          tabIds.push(tab.id);
+        }
+        
+        // Salvar informações das abas adiadas
         await chrome.storage.local.set({ delayedTabs });
 
-        // Create alarm for this tab
-        if (chrome.alarms) {
-          await chrome.alarms.create(`delayed-tab-${tabInfo.id}`, {
-            when: wakeTime,
-          });
+        // Fechar todas as abas
+        if (chrome.tabs && tabIds.length > 0) {
+          await chrome.tabs.remove(tabIds);
         }
 
-        // Close the tab
-        if (chrome.tabs) {
-          await chrome.tabs.remove(tabInfo.id);
-        }
-
-        // Close the popup
+        // Fechar o popup
         if (window.close) {
           window.close();
         }
       });
     } else {
-      console.log('Development mode - tab would be delayed:', tabInfo);
+      console.log('Development mode - tabs would be delayed:', tabsToDelay);
     }
   };
 
@@ -109,28 +168,46 @@ function CustomDelayView(): React.ReactElement {
           </h2>
         </div>
 
-        {activeTab && (
-          <div className='mb-5 flex items-center rounded-lg bg-base-100/70 p-4 shadow-sm transition-all duration-200 hover:bg-base-100'>
-            {activeTab.favIconUrl && (
-              <img
-                src={activeTab.favIconUrl}
-                alt='Tab favicon'
-                className='mr-3 h-5 w-5 rounded-sm'
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                }}
-              />
+        {/* Exibição da aba ou abas selecionadas */}
+        <div className='mb-5'>
+          <div className='text-sm font-medium text-base-content/80 mb-2'>Adiando:</div>
+          <div className='rounded-lg bg-base-100/70 p-4 shadow-sm transition-all duration-200 hover:bg-base-100'>
+            {selectedMode === 'active' && activeTab && (
+              <div className='flex items-center'>
+                {activeTab.favIconUrl && (
+                  <img
+                    src={activeTab.favIconUrl}
+                    alt='Tab favicon'
+                    className='mr-3 h-5 w-5 rounded-sm'
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                )}
+                <div className='overflow-hidden'>
+                  <div className='truncate text-sm font-medium text-base-content/80'>
+                    {activeTab.title}
+                  </div>
+                  <div className='truncate text-xs text-base-content/60'>
+                    {activeTab.url}
+                  </div>
+                </div>
+              </div>
             )}
-            <div className='overflow-hidden'>
-              <div className='truncate text-sm font-medium text-base-content/80'>
-                {activeTab.title}
+            
+            {selectedMode === 'highlighted' && (
+              <div className='text-sm font-medium text-base-content/80'>
+                {highlightedTabs.length} {highlightedTabs.length === 1 ? 'aba selecionada' : 'abas selecionadas'}
               </div>
-              <div className='truncate text-xs text-base-content/60'>
-                {activeTab.url}
+            )}
+            
+            {selectedMode === 'window' && (
+              <div className='text-sm font-medium text-base-content/80'>
+                {allWindowTabs.length} {allWindowTabs.length === 1 ? 'aba na janela' : 'abas na janela'}
               </div>
-            </div>
+            )}
           </div>
-        )}
+        </div>
 
         <div className='form-control'>
           <label className='label'>

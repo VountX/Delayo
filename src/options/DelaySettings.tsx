@@ -87,8 +87,8 @@ function DelaySettingsComponent(): React.ReactElement {
   }
 
   return (
-    <div className='card w-full min-w-[650px] bg-base-200 border border-base-300 shadow-sm hover:shadow-md transition-shadow duration-300'>
-      <div className='card-body'>
+    <div className='card w-full max-w-4xl mx-auto bg-base-100 border border-base-200 shadow-sm hover:shadow-md transition-shadow duration-300'>
+      <div className='card-body p-6 sm:p-8'>
         <h2 className='card-title mb-4'>Configurações de Adiamento</h2>
 
         <div className='space-y-4'>
@@ -119,7 +119,7 @@ function DelaySettingsComponent(): React.ReactElement {
             </label>
             <input
               type='time'
-              className='input input-bordered w-full max-w-xs'
+              className='input input-bordered w-full'
               value={settings.tonightTime}
               onChange={(e) => updateSetting('tonightTime', e.target.value)}
             />
@@ -132,7 +132,7 @@ function DelaySettingsComponent(): React.ReactElement {
             </label>
             <input
               type='time'
-              className='input input-bordered w-full max-w-xs'
+              className='input input-bordered w-full'
               value={settings.tomorrowTime}
               onChange={(e) => updateSetting('tomorrowTime', e.target.value)}
             />

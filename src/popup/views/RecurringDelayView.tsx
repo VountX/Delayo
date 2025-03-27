@@ -28,6 +28,9 @@ function RecurringDelayView(): React.ReactElement {
   const endDateId = useId();
 
   const [activeTab, setActiveTab] = useState<chrome.tabs.Tab | null>(null);
+  const [highlightedTabs, setHighlightedTabs] = useState<chrome.tabs.Tab[]>([]);
+  const [allWindowTabs, setAllWindowTabs] = useState<chrome.tabs.Tab[]>([]);
+  const [selectedMode, setSelectedMode] = useState<'active' | 'highlighted' | 'window'>('active');
   const [loading, setLoading] = useState(true);
   const [recurrenceType, setRecurrenceType] =
     useState<RecurrencePattern['type']>('daily');
@@ -47,31 +50,59 @@ function RecurringDelayView(): React.ReactElement {
   ];
 
   useEffect(() => {
-    const getCurrentTab = async (): Promise<void> => {
+    const getTabs = async (): Promise<void> => {
       try {
         if (typeof chrome !== 'undefined' && chrome.tabs && chrome.tabs.query) {
+          // Obter a aba ativa
           const [tab] = await chrome.tabs.query({
             active: true,
             currentWindow: true,
           });
           setActiveTab(tab);
+          
+          // Obter abas destacadas (selecionadas pelo usuário)
+          const highlighted = await chrome.tabs.query({
+            highlighted: true,
+            currentWindow: true,
+          });
+          setHighlightedTabs(highlighted);
+          
+          // Obter o modo de seleção da tela principal
+          const { selectedMode: mainViewMode } = await chrome.storage.local.get('selectedMode');
+          if (mainViewMode) {
+            setSelectedMode(mainViewMode);
+          } else if (highlighted.length > 1) {
+            setSelectedMode('highlighted');
+          } else {
+            setSelectedMode('active');
+          }
+          
+          // Obter todas as abas da janela atual
+          const allTabs = await chrome.tabs.query({
+            currentWindow: true,
+          });
+          setAllWindowTabs(allTabs);
         } else {
-          // Development mode mock data
-          setActiveTab({
+          // Modo de desenvolvimento
+          const mockTab = {
             id: 123,
             url: 'https://example.com',
             title: 'Example Page (DEV MODE)',
             favIconUrl: 'https://www.google.com/favicon.ico',
-          } as chrome.tabs.Tab);
+          } as chrome.tabs.Tab;
+          
+          setActiveTab(mockTab);
+          setHighlightedTabs([mockTab]);
+          setAllWindowTabs([mockTab]);
         }
       } catch (error) {
-        console.error('Error getting tab:', error);
+        console.error('Error getting tabs:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    getCurrentTab();
+    getTabs();
   }, []);
 
   useEffect(() => {
@@ -93,8 +124,23 @@ function RecurringDelayView(): React.ReactElement {
     }
   };
 
+  // Função para obter as abas a serem adiadas com base no modo selecionado
+  const getTabsToDelay = (): chrome.tabs.Tab[] => {
+    switch (selectedMode) {
+      case 'active':
+        return activeTab ? [activeTab] : [];
+      case 'highlighted':
+        return highlightedTabs;
+      case 'window':
+        return allWindowTabs;
+      default:
+        return activeTab ? [activeTab] : [];
+    }
+  };
+
   const handleDelay = async (): Promise<void> => {
-    if (!activeTab || !activeTab.id) return;
+    const tabsToDelay = getTabsToDelay();
+    if (tabsToDelay.length === 0) return;
 
     // Calculate the first wake time
     const now = new Date();
@@ -142,17 +188,6 @@ function RecurringDelayView(): React.ReactElement {
       endDate: endDate ? new Date(endDate).getTime() : undefined,
     };
 
-    // Create the delayed tab info
-    const tabInfo: DelayedTab = {
-      id: activeTab.id,
-      url: activeTab.url,
-      title: activeTab.title,
-      favicon: activeTab.favIconUrl,
-      createdAt: Date.now(),
-      wakeTime: firstWakeTime.getTime(),
-      recurrencePattern,
-    };
-
     if (
       typeof chrome !== 'undefined' &&
       chrome.storage &&
@@ -161,19 +196,43 @@ function RecurringDelayView(): React.ReactElement {
       // Save to storage
       chrome.storage.local.get({ delayedTabs: [] }, async (data) => {
         const { delayedTabs } = data;
-        delayedTabs.push(tabInfo);
+        const tabIds: number[] = [];
+        
+        // Processar cada aba a ser adiada
+        for (const tab of tabsToDelay) {
+          if (!tab.id) continue;
+          
+          // Create the delayed tab info
+          const tabInfo: DelayedTab = {
+            id: tab.id,
+            url: tab.url,
+            title: tab.title,
+            favicon: tab.favIconUrl,
+            createdAt: Date.now(),
+            wakeTime: firstWakeTime.getTime(),
+            recurrencePattern,
+          };
+          
+          // Adicionar à lista de abas adiadas
+          delayedTabs.push(tabInfo);
+          
+          // Create alarm for this tab
+          if (chrome.alarms) {
+            await chrome.alarms.create(`delayed-tab-${tabInfo.id}`, {
+              when: firstWakeTime.getTime(),
+            });
+          }
+          
+          // Adicionar ID da aba à lista para fechar
+          tabIds.push(tab.id);
+        }
+        
+        // Salvar informações das abas adiadas
         await chrome.storage.local.set({ delayedTabs });
 
-        // Create alarm for this tab
-        if (chrome.alarms) {
-          await chrome.alarms.create(`delayed-tab-${tabInfo.id}`, {
-            when: firstWakeTime.getTime(),
-          });
-        }
-
-        // Close the tab
-        if (chrome.tabs) {
-          await chrome.tabs.remove(tabInfo.id);
+        // Fechar todas as abas
+        if (chrome.tabs && tabIds.length > 0) {
+          await chrome.tabs.remove(tabIds);
         }
 
         // Close the popup
@@ -182,7 +241,7 @@ function RecurringDelayView(): React.ReactElement {
         }
       });
     } else {
-      console.log('Development mode - tab would be delayed:', tabInfo);
+      console.log('Development mode - tabs would be delayed:', tabsToDelay);
     }
   };
 
@@ -211,28 +270,46 @@ function RecurringDelayView(): React.ReactElement {
           </h2>
         </div>
 
-        {activeTab && (
-          <div className='mb-4 flex items-center rounded-lg bg-base-100/70 p-4 shadow-sm transition-all duration-200 hover:bg-base-100'>
-            {activeTab.favIconUrl && (
-              <img
-                src={activeTab.favIconUrl}
-                alt='Tab favicon'
-                className='mr-3 h-5 w-5'
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                }}
-              />
+        {/* Exibição da aba ou abas selecionadas */}
+        <div className='mb-4'>
+          <div className='text-sm font-medium text-base-content/80 mb-2'>Adiando:</div>
+          <div className='rounded-lg bg-base-100/70 p-4 shadow-sm transition-all duration-200 hover:bg-base-100'>
+            {selectedMode === 'active' && activeTab && (
+              <div className='flex items-center'>
+                {activeTab.favIconUrl && (
+                  <img
+                    src={activeTab.favIconUrl}
+                    alt='Tab favicon'
+                    className='mr-3 h-5 w-5'
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                )}
+                <div className='overflow-hidden'>
+                  <div className='truncate text-sm font-medium text-base-content/80'>
+                    {activeTab.title}
+                  </div>
+                  <div className='truncate text-xs text-base-content/60'>
+                    {activeTab.url}
+                  </div>
+                </div>
+              </div>
             )}
-            <div className='overflow-hidden'>
-              <div className='truncate text-sm font-medium text-base-content/80'>
-                {activeTab.title}
+            
+            {selectedMode === 'highlighted' && (
+              <div className='text-sm font-medium text-base-content/80'>
+                {highlightedTabs.length} {highlightedTabs.length === 1 ? 'aba selecionada' : 'abas selecionadas'}
               </div>
-              <div className='truncate text-xs text-base-content/60'>
-                {activeTab.url}
+            )}
+            
+            {selectedMode === 'window' && (
+              <div className='text-sm font-medium text-base-content/80'>
+                {allWindowTabs.length} {allWindowTabs.length === 1 ? 'aba na janela' : 'abas na janela'}
               </div>
-            </div>
+            )}
           </div>
-        )}
+        </div>
 
         <FormControl label='Padrão de Recorrência'>
           <select
@@ -317,7 +394,7 @@ function RecurringDelayView(): React.ReactElement {
             className='btn btn-primary'
             onClick={handleDelay}
             disabled={
-              !activeTab ||
+              getTabsToDelay().length === 0 ||
               (recurrenceType === 'custom' && selectedDays.length === 0)
             }
           >

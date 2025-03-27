@@ -23,6 +23,9 @@ interface DelaySettings {
 
 function MainView(): React.ReactElement {
   const [activeTab, setActiveTab] = useState<chrome.tabs.Tab | null>(null);
+  const [highlightedTabs, setHighlightedTabs] = useState<chrome.tabs.Tab[]>([]);
+  const [allWindowTabs, setAllWindowTabs] = useState<chrome.tabs.Tab[]>([]);
+  const [selectedMode, setSelectedMode] = useState<'active' | 'highlighted' | 'window'>('active');
   const [loading, setLoading] = useState(true);
   const [settings, setSettings] = useState<DelaySettings>({
     laterToday: 3, // 3 horas mais tarde
@@ -39,30 +42,56 @@ function MainView(): React.ReactElement {
   const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
-    const getCurrentTab = async (): Promise<void> => {
+    const getTabs = async (): Promise<void> => {
       try {
         if (typeof chrome !== 'undefined' && chrome.tabs) {
+          // Obter a aba ativa
           const [tab] = await chrome.tabs.query({
             active: true,
             currentWindow: true,
           });
           setActiveTab(tab);
+          
+          // Obter abas destacadas (selecionadas pelo usuário)
+          const highlighted = await chrome.tabs.query({
+            highlighted: true,
+            currentWindow: true,
+          });
+          setHighlightedTabs(highlighted);
+          
+          // Definir o modo de seleção com base nas abas destacadas
+          if (highlighted.length > 1) {
+            setSelectedMode('highlighted');
+          } else {
+            setSelectedMode('active');
+          }
+          
+          // Obter todas as abas da janela atual
+          const allTabs = await chrome.tabs.query({
+            currentWindow: true,
+          });
+          setAllWindowTabs(allTabs);
         } else {
-          setActiveTab({
+          // Modo de desenvolvimento
+          const mockTab = {
             id: 123,
             url: 'https://example.com',
             title: 'Example Page (DEV MODE)',
             favIconUrl: 'https://www.google.com/favicon.ico',
-          } as chrome.tabs.Tab);
+          } as chrome.tabs.Tab;
+          
+          setActiveTab(mockTab);
+          setHighlightedTabs([mockTab]);
+          setAllWindowTabs([mockTab]);
         }
       } catch (error) {
-        console.error('Error getting tab:', error);
+        console.error('Error getting tabs:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    getCurrentTab();
+    getTabs();
   }, []);
 
   // Carrega as configurações salvas
@@ -278,8 +307,27 @@ function MainView(): React.ReactElement {
     },
   ];
 
+  // Função para obter as abas a serem adiadas com base no modo selecionado
+  const getTabsToDelay = (): chrome.tabs.Tab[] => {
+    switch (selectedMode) {
+      case 'active':
+        return activeTab ? [activeTab] : [];
+      case 'highlighted':
+        return highlightedTabs;
+      case 'window':
+        return allWindowTabs;
+      default:
+        return activeTab ? [activeTab] : [];
+    }
+  };
+
   const handleDelay = async (option: DelayOption): Promise<void> => {
-    if (!activeTab || !activeTab.id) return;
+    // Salvar o modo selecionado no armazenamento local para ser usado em outras telas
+    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+      await chrome.storage.local.set({ selectedMode });
+    }
+    const tabsToDelay = getTabsToDelay();
+    if (tabsToDelay.length === 0) return;
 
     let wakeTime: number;
     if (option.calculateTime) {
@@ -292,30 +340,45 @@ function MainView(): React.ReactElement {
         (option.days ? option.days * 24 * 60 * 60 * 1000 : 0);
     }
 
-    const tabInfo = {
-      id: activeTab.id,
-      url: activeTab.url,
-      title: activeTab.title,
-      favicon: activeTab.favIconUrl,
-      createdAt: Date.now(),
-      wakeTime,
-    };
-
-    // Save delayed tab info to storage
+    // Obter as abas já adiadas
     await chrome.storage.local.get({ delayedTabs: [] }, async (data) => {
       const { delayedTabs } = data;
-      delayedTabs.push(tabInfo);
+      const tabIds: number[] = [];
+      
+      // Processar cada aba a ser adiada
+      for (const tab of tabsToDelay) {
+        if (!tab.id) continue;
+        
+        const tabInfo = {
+          id: tab.id,
+          url: tab.url,
+          title: tab.title,
+          favicon: tab.favIconUrl,
+          createdAt: Date.now(),
+          wakeTime,
+        };
+
+        // Adicionar à lista de abas adiadas
+        delayedTabs.push(tabInfo);
+        
+        // Criar alarme para esta aba
+        await chrome.alarms.create(`delayed-tab-${tabInfo.id}`, {
+          when: wakeTime,
+        });
+        
+        // Adicionar ID da aba à lista para fechar
+        tabIds.push(tab.id);
+      }
+      
+      // Salvar informações das abas adiadas
       await chrome.storage.local.set({ delayedTabs });
 
-      // Create alarm for this tab
-      await chrome.alarms.create(`delayed-tab-${tabInfo.id}`, {
-        when: wakeTime,
-      });
+      // Fechar todas as abas
+      if (tabIds.length > 0) {
+        await chrome.tabs.remove(tabIds);
+      }
 
-      // Close the tab
-      await chrome.tabs.remove(tabInfo.id);
-
-      // Close the popup
+      // Fechar o popup
       window.close();
     });
   };
@@ -367,23 +430,69 @@ function MainView(): React.ReactElement {
           </div>
         </div>
 
-        {activeTab && (
-          <div className='mb-5 flex items-center rounded-lg bg-base-100/70 p-4 shadow-sm transition-all duration-200 hover:bg-base-100'>
-            {activeTab.favIconUrl && (
-              <img
-                src={activeTab.favIconUrl}
-                alt='Tab favicon'
-                className='mr-3 h-5 w-5 rounded-sm'
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                }}
-              />
-            )}
-            <div className='truncate text-sm font-medium text-base-content/80'>
-              {activeTab.title}
+        {/* Seletor de modo de adiamento */}
+        <div className='mb-5 flex flex-col space-y-3'>
+          <div className='flex items-center justify-between'>
+            <div className='text-sm font-medium text-base-content/80'>Adiar:</div>
+            <div className='flex space-x-2'>
+              <button
+                type='button'
+                className={`btn btn-sm ${selectedMode === 'active' ? 'btn-primary' : 'btn-outline'}`}
+                onClick={() => setSelectedMode('active')}
+              >
+                Aba Ativa
+              </button>
+              <button
+                type='button'
+                className={`btn btn-sm ${selectedMode === 'highlighted' ? 'btn-primary' : 'btn-outline'}`}
+                onClick={() => setSelectedMode('highlighted')}
+                disabled={highlightedTabs.length <= 1}
+              >
+                Abas Selecionadas {highlightedTabs.length > 1 ? `(${highlightedTabs.length})` : ''}
+              </button>
+              <button
+                type='button'
+                className={`btn btn-sm ${selectedMode === 'window' ? 'btn-primary' : 'btn-outline'}`}
+                onClick={() => setSelectedMode('window')}
+              >
+                Toda a Janela {allWindowTabs.length > 0 ? `(${allWindowTabs.length})` : ''}
+              </button>
             </div>
           </div>
-        )}
+          
+          {/* Exibição da aba ou abas selecionadas */}
+          <div className='rounded-lg bg-base-100/70 p-4 shadow-sm transition-all duration-200 hover:bg-base-100'>
+            {selectedMode === 'active' && activeTab && (
+              <div className='flex items-center'>
+                {activeTab.favIconUrl && (
+                  <img
+                    src={activeTab.favIconUrl}
+                    alt='Tab favicon'
+                    className='mr-3 h-5 w-5 rounded-sm'
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                )}
+                <div className='truncate text-sm font-medium text-base-content/80'>
+                  {activeTab.title}
+                </div>
+              </div>
+            )}
+            
+            {selectedMode === 'highlighted' && (
+              <div className='text-sm font-medium text-base-content/80'>
+                {highlightedTabs.length} {highlightedTabs.length === 1 ? 'aba selecionada' : 'abas selecionadas'}
+              </div>
+            )}
+            
+            {selectedMode === 'window' && (
+              <div className='text-sm font-medium text-base-content/80'>
+                {allWindowTabs.length} {allWindowTabs.length === 1 ? 'aba na janela' : 'abas na janela'}
+              </div>
+            )}
+          </div>
+        </div>
 
         <div className='grid grid-cols-3 gap-2.5'>
           {delayOptions.slice(0, 7).map((option) => (
@@ -426,6 +535,11 @@ function MainView(): React.ReactElement {
               to='/custom-delay'
               className='group btn h-24 flex-col items-center justify-center rounded-xl border-none bg-base-100/70 p-3 shadow-sm transition-all duration-200 hover:bg-base-100'
               viewTransition={{ types: ['slide-left'] }}
+              onClick={() => {
+                if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+                  chrome.storage.local.set({ selectedMode });
+                }
+              }}
             >
               <FontAwesomeIcon
                 icon='calendar-days'
@@ -443,6 +557,11 @@ function MainView(): React.ReactElement {
               to='/recurring-delay'
               className='group btn h-24 flex-col items-center justify-center rounded-xl border-none bg-base-100/70 p-3 shadow-sm transition-all duration-200 hover:bg-base-100'
               viewTransition={{ types: ['slide-left'] }}
+              onClick={() => {
+                if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+                  chrome.storage.local.set({ selectedMode });
+                }
+              }}
             >
               <FontAwesomeIcon
                 icon='repeat'
@@ -453,6 +572,21 @@ function MainView(): React.ReactElement {
               </span>
             </Link>
           </div>
+        </div>
+        
+        {/* Manage Delayed Tabs button */}
+        <div className='mt-6 flex justify-center'>
+          <Link
+            to='/manage-tabs'
+            className='btn btn-sm btn-ghost text-sm font-medium text-base-content/70 hover:text-delayo-orange transition-all duration-200'
+            viewTransition={{ types: ['slide-left'] }}
+          >
+            <FontAwesomeIcon
+              icon='list-ul'
+              className='mr-2 h-4 w-4'
+            />
+            Gerenciar Abas Adiadas
+          </Link>
         </div>
       </div>
     </div>
