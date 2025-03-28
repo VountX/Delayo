@@ -1,4 +1,17 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+
+
+// Define CSS classes
+const getInputClasses = (isPopup: boolean): string => {
+  return `input input-bordered ${isPopup ? 'rounded-lg bg-base-100/70 p-4 shadow-sm transition-all duration-200 hover:bg-base-100 h-12' : ''}`;
+};
+const getRadioClasses = (isPopup: boolean): string => {
+  return `radio radio-primary ${isPopup ? 'transition-all duration-200' : ''}`;
+};
+const getSelectClasses = (isPopup: boolean): string => {
+  return `select select-bordered ${isPopup ? 'rounded-lg bg-base-100/70 shadow-sm transition-all duration-200 hover:bg-base-100' : ''}`;
+};
 
 // Define the type for delay settings
 interface DelaySettings {
@@ -7,6 +20,7 @@ interface DelaySettings {
   tomorrowTime: string; // format HH:MM
   weekendDay: 'saturday' | 'sunday';
   weekendTime: string; // format HH:MM
+  nextWeekSameDay: boolean; // if true, same day of week; if false, specific day of week
   nextWeekDay: number; // 0-6 (0 = Sunday, 1 = Monday, etc.)
   nextWeekTime: string; // format HH:MM
   nextMonthSameDay: boolean; // if true, same day of month; if false, same day of week
@@ -21,6 +35,7 @@ const defaultSettings: DelaySettings = {
   tomorrowTime: '09:00', // 9 AM
   weekendDay: 'saturday',
   weekendTime: '09:00', // 9 AM
+  nextWeekSameDay: false,
   nextWeekDay: 1, // Monday
   nextWeekTime: '09:00', // 9 AM
   nextMonthSameDay: true,
@@ -28,10 +43,15 @@ const defaultSettings: DelaySettings = {
   somedayMaxMonths: 12, // maximum 12 months
 };
 
-function DelaySettingsComponent(): React.ReactElement {
+interface DelaySettingsComponentProps {
+  isPopup?: boolean;
+}
+
+function DelaySettingsComponent({ isPopup = false }: DelaySettingsComponentProps): React.ReactElement {
   const [settings, setSettings] = useState<DelaySettings>(defaultSettings);
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
+  const { t } = useTranslation();
 
   // Load saved settings
   useEffect(() => {
@@ -42,7 +62,7 @@ function DelaySettingsComponent(): React.ReactElement {
           await chrome.storage.local.get('delaySettings');
         setSettings(delaySettings);
       } catch (error) {
-        // Silenciosamente trata o erro
+        //
       } finally {
         setLoading(false);
       }
@@ -51,14 +71,14 @@ function DelaySettingsComponent(): React.ReactElement {
     loadSettings();
   }, []);
 
-  // Save settings
+  //
   const saveSettings = async (): Promise<void> => {
     try {
       await chrome.storage.local.set({ delaySettings: settings });
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (error) {
-      // error handling
+      //
     }
   };
 
@@ -67,7 +87,7 @@ function DelaySettingsComponent(): React.ReactElement {
     setSettings(defaultSettings);
   };
 
-  // Update a specific field in the settings
+  //
   const updateSetting = <K extends keyof DelaySettings>(
     key: K,
     value: DelaySettings[K]
@@ -87,20 +107,20 @@ function DelaySettingsComponent(): React.ReactElement {
   }
 
   return (
-    <div className='card w-full max-w-4xl mx-auto bg-base-100 border border-base-200 shadow-sm hover:shadow-md transition-shadow duration-300'>
+    <div className={`card w-full max-w-4xl mx-auto bg-base-300 ${!isPopup ? 'border border-base-300 shadow-sm hover:shadow-md transition-shadow duration-300' : ''}`}>
       <div className='card-body p-6 sm:p-8'>
-        <h2 className='card-title mb-4'>Configurações de Adiamento</h2>
+        <h2 className='card-title mb-4'>{t('settings.defaultDelayOptions')}</h2>
 
         <div className='space-y-4'>
           {/* Later Today */}
           <div className='form-control'>
             <label className='label'>
-              <span className='label-text font-medium'>Hoje Mais Tarde</span>
+              <span className='label-text font-medium'>{t('settings.laterToday')}</span>
             </label>
             <div className='flex items-center'>
               <input
                 type='number'
-                className='input input-bordered w-20'
+                className={`${getInputClasses(isPopup)} w-20`}
                 min='1'
                 max='12'
                 value={settings.laterToday}
@@ -108,44 +128,50 @@ function DelaySettingsComponent(): React.ReactElement {
                   updateSetting('laterToday', parseInt(e.target.value, 10) || 1)
                 }
               />
-              <span className='ml-2'>horas mais tarde</span>
+              <span className='ml-2'>{t('settings.hours')}</span>
             </div>
           </div>
 
           {/* Tonight */}
           <div className='form-control'>
             <label className='label'>
-              <span className='label-text font-medium'>Hoje à Noite</span>
+              <span className='label-text font-medium'>{t('settings.tonight')}</span>
             </label>
-            <input
-              type='time'
-              className='input input-bordered w-full'
-              value={settings.tonightTime}
-              onChange={(e) => updateSetting('tonightTime', e.target.value)}
-            />
+            <div className='relative'>
+              <input
+                type='time'
+                className={`${getInputClasses(isPopup)} w-full max-w-72`}
+                value={settings.tonightTime}
+                onChange={(e) => updateSetting('tonightTime', e.target.value)}
+                style={{ appearance: 'none' }}
+              />
+            </div>
           </div>
 
           {/* Tomorrow */}
           <div className='form-control'>
             <label className='label'>
-              <span className='label-text font-medium'>Amanhã</span>
+              <span className='label-text font-medium'>{t('settings.tomorrow')}</span>
             </label>
-            <input
-              type='time'
-              className='input input-bordered w-full'
-              value={settings.tomorrowTime}
-              onChange={(e) => updateSetting('tomorrowTime', e.target.value)}
-            />
+            <div className='relative'>
+              <input
+                type='time'
+                className={`${getInputClasses(isPopup)} w-full max-w-72`}
+                value={settings.tomorrowTime}
+                onChange={(e) => updateSetting('tomorrowTime', e.target.value)}
+                style={{ appearance: 'none' }}
+              />
+            </div>
           </div>
 
           {/* This Weekend */}
           <div className='form-control'>
             <label className='label'>
-              <span className='label-text font-medium'>Este Fim de Semana</span>
+              <span className='label-text font-medium'>{t('settings.weekend')}</span>
             </label>
             <div className='flex flex-col gap-2 sm:flex-row sm:items-center'>
               <select
-                className='select select-bordered w-full max-w-xs'
+                className={`${getSelectClasses(isPopup)} w-full max-w-72`}
                 value={settings.weekendDay}
                 onChange={(e) =>
                   updateSetting(
@@ -154,52 +180,89 @@ function DelaySettingsComponent(): React.ReactElement {
                   )
                 }
               >
-                <option value='saturday'>Sábado</option>
-                <option value='sunday'>Domingo</option>
+                <option value='saturday'>{t('popup.weekdays.saturday')}</option>
+                <option value='sunday'>{t('popup.weekdays.sunday')}</option>
               </select>
-              <input
-                type='time'
-                className='input input-bordered w-full max-w-xs'
-                value={settings.weekendTime}
-                onChange={(e) => updateSetting('weekendTime', e.target.value)}
-              />
+              <div className='relative'>
+                <input
+                  type='time'
+                  className={`${getInputClasses(isPopup)} w-full max-w-72`}
+                  value={settings.weekendTime}
+                  onChange={(e) => updateSetting('weekendTime', e.target.value)}
+                  style={{ appearance: 'none' }}
+                />
+              </div>
             </div>
           </div>
 
           {/* Next Week */}
           <div className='form-control'>
             <label className='label'>
-              <span className='label-text font-medium'>Próxima Semana</span>
+              <span className='label-text font-medium'>{t('settings.nextWeek')}</span>
             </label>
-            <div className='flex flex-col gap-2 sm:flex-row sm:items-center'>
-              <select
-                className='select select-bordered w-full max-w-xs'
-                value={settings.nextWeekDay}
-                onChange={(e) =>
-                  updateSetting('nextWeekDay', parseInt(e.target.value, 10))
-                }
-              >
-                <option value='0'>Domingo</option>
-                <option value='1'>Segunda-feira</option>
-                <option value='2'>Terça-feira</option>
-                <option value='3'>Quarta-feira</option>
-                <option value='4'>Quinta-feira</option>
-                <option value='5'>Sexta-feira</option>
-                <option value='6'>Sábado</option>
-              </select>
-              <input
-                type='time'
-                className='input input-bordered w-full max-w-xs'
-                value={settings.nextWeekTime}
-                onChange={(e) => updateSetting('nextWeekTime', e.target.value)}
-              />
+            <div className='flex items-center mb-2'>
+              <div className='form-control'>
+                <label className='label cursor-pointer'>
+                  <input
+                    type='radio'
+                    name='nextWeekOption'
+                    className={getRadioClasses(isPopup)}
+                    checked={settings.nextWeekSameDay}
+                    onChange={() => updateSetting('nextWeekSameDay', true)}
+                  />
+                  <span className='label-text ml-2'>{t('settings.sameDayOfWeek', 'Mesmo dia da semana')}</span>
+                </label>
+              </div>
+              <div className='form-control ml-4'>
+                <label className='label cursor-pointer'>
+                  <input
+                    type='radio'
+                    name='nextWeekOption'
+                    className={getRadioClasses(isPopup)}
+                    checked={!settings.nextWeekSameDay}
+                    onChange={() => updateSetting('nextWeekSameDay', false)}
+                  />
+                  <span className='label-text ml-2'>{t('settings.specificDay', 'Dia específico')}</span>
+                </label>
+              </div>
             </div>
+            
+            {!settings.nextWeekSameDay && (
+              <div className='flex flex-col gap-2 sm:flex-row sm:items-center'>
+                <select
+                  className={`${getSelectClasses(isPopup)} w-full max-w-72`}
+                  value={settings.nextWeekDay}
+                  onChange={(e) =>
+                    updateSetting('nextWeekDay', parseInt(e.target.value, 10))
+                  }
+                >
+                  <option value='0'>{t('popup.weekdays.sunday')}</option>
+                  <option value='1'>{t('popup.weekdays.monday')}</option>
+                  <option value='2'>{t('popup.weekdays.tuesday')}</option>
+                  <option value='3'>{t('popup.weekdays.wednesday')}</option>
+                  <option value='4'>{t('popup.weekdays.thursday')}</option>
+                  <option value='5'>{t('popup.weekdays.friday')}</option>
+                  <option value='6'>{t('popup.weekdays.saturday')}</option>
+                </select>
+                <div className='relative'>
+                  <input
+                    type='time'
+                    className={`${getInputClasses(isPopup)} w-full max-w-72`}
+                    value={settings.nextWeekTime}
+                    onChange={(e) => updateSetting('nextWeekTime', e.target.value)}
+                    style={{ appearance: 'none' }}
+                  />
+                </div>
+              </div>
+            )}
+            
+            {/* Removido o input de horário para 'mesmo dia da semana' conforme solicitado */}
           </div>
 
           {/* Next Month */}
           <div className='form-control'>
             <label className='label'>
-              <span className='label-text font-medium'>Próximo Mês</span>
+              <span className='label-text font-medium'>{t('settings.nextMonth')}</span>
             </label>
             <div className='flex items-center'>
               <div className='form-control'>
@@ -207,11 +270,11 @@ function DelaySettingsComponent(): React.ReactElement {
                   <input
                     type='radio'
                     name='nextMonthOption'
-                    className='radio-primary radio'
+                    className={getRadioClasses(isPopup)}
                     checked={settings.nextMonthSameDay}
                     onChange={() => updateSetting('nextMonthSameDay', true)}
                   />
-                  <span className='label-text ml-2'>Mesmo dia do mês</span>
+                  <span className='label-text ml-2'>{t('settings.sameDayOfMonth')}</span>
                 </label>
               </div>
               <div className='form-control ml-4'>
@@ -219,29 +282,30 @@ function DelaySettingsComponent(): React.ReactElement {
                   <input
                     type='radio'
                     name='nextMonthOption'
-                    className='radio-primary radio'
+                    className={getRadioClasses(isPopup)}
                     checked={!settings.nextMonthSameDay}
                     onChange={() => updateSetting('nextMonthSameDay', false)}
                   />
-                  <span className='label-text ml-2'>Mesmo dia da semana</span>
+                  <span className='label-text ml-2'>{t('settings.sameDayOfWeek')}</span>
                 </label>
               </div>
             </div>
+            {/* Nota: Não há input de horário para 'próximo mês' pois será usado o mesmo horário em que a aba foi adiada */}
           </div>
 
           {/* Someday (Random) */}
           <div className='form-control'>
             <label className='label'>
-              <span className='label-text font-medium'>Um Dia (Aleatório)</span>
+              <span className='label-text font-medium'>{t('settings.someday')}</span>
             </label>
             <div className='flex flex-col gap-2 sm:flex-row sm:items-center'>
               <div>
                 <label className='label'>
-                  <span className='label-text'>Mínimo (meses)</span>
+                  <span className='label-text'>{t('settings.minMonths')}</span>
                 </label>
                 <input
                   type='number'
-                  className='input input-bordered w-20'
+                  className={`${getInputClasses(isPopup)} w-20`}
                   min='1'
                   max='12'
                   value={settings.somedayMinMonths}
@@ -255,11 +319,11 @@ function DelaySettingsComponent(): React.ReactElement {
               </div>
               <div>
                 <label className='label'>
-                  <span className='label-text'>Máximo (meses)</span>
+                  <span className='label-text'>{t('settings.maxMonths')}</span>
                 </label>
                 <input
                   type='number'
-                  className='input input-bordered w-20'
+                  className={`${getInputClasses(isPopup)} w-20`}
                   min={settings.somedayMinMonths + 1}
                   max='36'
                   value={settings.somedayMaxMonths}
@@ -282,20 +346,20 @@ function DelaySettingsComponent(): React.ReactElement {
             className='btn btn-outline'
             onClick={resetSettings}
           >
-            Restaurar Padrões
+            {t('settings.reset')}
           </button>
           <button
             type='button'
             className='btn btn-primary'
             onClick={saveSettings}
           >
-            Salvar Configurações
+            {t('common.save')}
           </button>
         </div>
 
         {saved && (
           <div className='mt-4 text-center text-success'>
-            Configurações salvas com sucesso!
+            {t('settings.saved', 'Configurações salvas com sucesso!')}
           </div>
         )}
       </div>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { DelayedTab } from '@types';
+import { useTranslation } from 'react-i18next';
 
 import useTheme from '../../utils/useTheme';
 
@@ -11,13 +12,13 @@ function ManageTabsView(): React.ReactElement {
   const [selectedTabs, setSelectedTabs] = useState<number[]>([]);
   const [selectMode, setSelectMode] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const loadDelayedTabs = async (): Promise<void> => {
       try {
         setLoading(true);
         const { delayedTabs = [] } = await chrome.storage.local.get('delayedTabs');
-        // Sort tabs by wake time
         const sortedTabs = [...delayedTabs].sort(
           (a, b) => a.wakeTime - b.wakeTime
         );
@@ -35,16 +36,11 @@ function ManageTabsView(): React.ReactElement {
   const wakeTabNow = async (tab: DelayedTab): Promise<void> => {
     try {
       if (tab.url) {
-        // Create a new tab with the delayed URL
         await chrome.tabs.create({ url: tab.url });
-        // Remove the tab from storage
         const updatedTabs = delayedTabs.filter((t) => t.id !== tab.id);
         await chrome.storage.local.set({ delayedTabs: updatedTabs });
-        // Cancel the alarm
         await chrome.alarms.clear(`delayed-tab-${tab.id}`);
-        // Update state
         setDelayedTabs(updatedTabs);
-        // Clear selection if the tab was selected
         setSelectedTabs(prev => prev.filter(id => id !== tab.id));
       }
     } catch (error) {
@@ -54,14 +50,10 @@ function ManageTabsView(): React.ReactElement {
 
   const removeTab = async (tab: DelayedTab): Promise<void> => {
     try {
-      // Remove the tab from storage
       const updatedTabs = delayedTabs.filter((t) => t.id !== tab.id);
       await chrome.storage.local.set({ delayedTabs: updatedTabs });
-      // Cancel the alarm
       await chrome.alarms.clear(`delayed-tab-${tab.id}`);
-      // Update state
       setDelayedTabs(updatedTabs);
-      // Clear selection if the tab was selected
       setSelectedTabs(prev => prev.filter(id => id !== tab.id));
     } catch (error) {
       console.error('Error removing tab:', error);
@@ -71,17 +63,14 @@ function ManageTabsView(): React.ReactElement {
   const toggleSelectMode = (): void => {
     setSelectMode(!selectMode);
     if (selectMode) {
-      // Clear selections when exiting select mode
       setSelectedTabs([]);
     }
   };
 
   const toggleSelectAll = (): void => {
     if (selectedTabs.length === delayedTabs.length) {
-      // If all are selected, deselect all
       setSelectedTabs([]);
     } else {
-      // Otherwise, select all
       setSelectedTabs(delayedTabs.map(tab => tab.id));
     }
   };
@@ -98,7 +87,6 @@ function ManageTabsView(): React.ReactElement {
 
   const wakeSelectedTabs = async (): Promise<void> => {
     try {
-      // Create tabs for all selected
       for (const tabId of selectedTabs) {
         const tab = delayedTabs.find(t => t.id === tabId);
         if (tab && tab.url) {
@@ -106,16 +94,13 @@ function ManageTabsView(): React.ReactElement {
         }
       }
 
-      // Remove all selected tabs from storage
       const updatedTabs = delayedTabs.filter(tab => !selectedTabs.includes(tab.id));
       await chrome.storage.local.set({ delayedTabs: updatedTabs });
 
-      // Cancel all alarms
       for (const tabId of selectedTabs) {
         await chrome.alarms.clear(`delayed-tab-${tabId}`);
       }
 
-      // Update state
       setDelayedTabs(updatedTabs);
       setSelectedTabs([]);
     } catch (error) {
@@ -125,16 +110,13 @@ function ManageTabsView(): React.ReactElement {
 
   const removeSelectedTabs = async (): Promise<void> => {
     try {
-      // Remove all selected tabs from storage
       const updatedTabs = delayedTabs.filter(tab => !selectedTabs.includes(tab.id));
       await chrome.storage.local.set({ delayedTabs: updatedTabs });
 
-      // Cancel all alarms
       for (const tabId of selectedTabs) {
         await chrome.alarms.clear(`delayed-tab-${tabId}`);
       }
 
-      // Update state
       setDelayedTabs(updatedTabs);
       setSelectedTabs([]);
     } catch (error) {
@@ -142,20 +124,34 @@ function ManageTabsView(): React.ReactElement {
     }
   };
 
-  const formatDate = (timestamp: number): string =>
-    new Date(timestamp).toLocaleString(undefined, {
+  const formatDate = (timestamp: number): string => {
+    // Obter o idioma atual do i18n
+    const locale = document.documentElement.lang || navigator.language || 'pt-BR';
+    
+    // Configurar formatação de acordo com o idioma
+    const isEnglish = locale.startsWith('en');
+    // As variáveis isSpanish e isPortuguese foram removidas pois não são utilizadas
+    
+    // Criar objeto de data
+    const date = new Date(timestamp);
+    
+    // Formatar a data de acordo com o idioma
+    return date.toLocaleString(locale, {
       year: 'numeric',
-      month: 'numeric',
+      month: 'long', // Mês por extenso (será traduzido automaticamente)
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-      hour12: false
+      hour12: isEnglish, // Usar AM/PM apenas para inglês
+      // A ordem de data (dia/mês/ano ou mês/dia/ano) é automática com toLocaleString
+      // Ordem de data para inglês (mês/dia/ano) é automática com toLocaleString
     });
+  };
 
   const calculateTimeLeft = (wakeTime: number): string => {
     const now = Date.now();
     const diff = wakeTime - now;
-    if (diff <= 0) return 'Agora';
+    if (diff <= 0) return t('manageTabs.now', 'Now');
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
@@ -185,7 +181,7 @@ function ManageTabsView(): React.ReactElement {
               <FontAwesomeIcon icon='arrow-left' />
             </Link>
             <h2 className='card-title font-bold text-delayo-orange'>
-              Gerenciar Abas Adiadas
+              {t('manageTabs.title')}
             </h2>
           </div>
           <button
@@ -209,9 +205,9 @@ function ManageTabsView(): React.ReactElement {
               icon='hourglass-empty'
               className='mb-4 h-12 w-12 text-neutral-400'
             />
-            <h3 className='mb-2 text-lg font-medium'>Sem abas adiadas</h3>
+            <h3 className='mb-2 text-lg font-medium'>{t('manageTabs.noTabs')}</h3>
             <p className='text-sm text-base-content/70'>
-              Você não tem nenhuma aba adiada no momento.
+              {t('manageTabs.noDelayedTabs')}
             </p>
           </div>
         ) : (

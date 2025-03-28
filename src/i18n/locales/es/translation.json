@@ -1,0 +1,107 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "back": "Volver",
+    "settings": "Configuración",
+    "tabs": "Pestañas",
+    "tabs.singular": "Pestaña",
+    "theme": {
+      "light": "Claro",
+      "dark": "Oscuro",
+      "system": "Sistema"
+    }
+  },
+  "popup": {
+    "title": "Delayo",
+    "delay": "Aplazar",
+    "selected": "seleccionadas",
+    "inWindow": "en esta ventana",
+    "tabs": {
+      "active": "Pestaña Activa",
+      "highlighted": "Pestañas Seleccionadas",
+      "window": "Ventana Actual"
+    },
+    "delayOptions": {
+      "laterToday": "Hoy más tarde (en {{hours}} horas)",
+      "tonight": "Esta noche (a las {{time}})",
+      "tomorrow": "Mañana ({{time}})",
+      "weekend": "Fin de semana ({{day}}, {{time}})",
+      "nextWeek": "Próxima semana ({{day}}, {{time}})",
+      "nextMonth": "Próximo mes",
+      "someday": "Algún día",
+      "custom": "Fecha personalizada",
+      "recurring": "Repetir"
+    },
+    "weekdays": {
+      "sunday": "Domingo",
+      "monday": "Lunes",
+      "tuesday": "Martes",
+      "wednesday": "Miércoles",
+      "thursday": "Jueves",
+      "friday": "Viernes",
+      "saturday": "Sábado"
+    },
+    "actions": {
+      "manageTabs": "Pestañas aplazadas",
+      "openSettings": "Configuración"
+    }
+  },
+  "customDelay": {
+    "title": "Aplazamiento Personalizado",
+    "selectDateTime": "Seleccionar Fecha y Hora",
+    "delayTab": "Aplazar pestaña"
+  },
+  "recurringDelay": {
+    "title": "Aplazamiento Recurrente",
+    "frequency": "Frecuencia",
+    "daily": "Diario",
+    "weekly": "Semanal",
+    "monthly": "Mensual",
+    "selectTime": "Seleccionar Hora",
+    "selectDay": "Seleccionar Día",
+    "delayTab": "Programar repetición"
+  },
+  "settings": {
+    "title": "Configuración",
+    "general": "General",
+    "language": "Idioma",
+    "theme": "Tema",
+    "reset": "Restablecer",
+    "notifications": "Notificaciones",
+    "enableNotifications": "Activar Notificaciones",
+    "defaultDelayOptions": "Opciones predeterminadas de aplazamiento",
+    "laterToday": "Hoy más tarde",
+    "hours": "horas",
+    "tonight": "Esta noche",
+    "tomorrow": "Mañana",
+    "weekend": "Fin de semana",
+    "day": "Día",
+    "nextWeek": "Próxima Semana",
+    "nextMonth": "Próximo Mes",
+    "sameDayOfMonth": "Mismo día del mes",
+    "sameDayOfWeek": "Mismo día de la semana",
+    "specificDay": "Día específico",
+    "someday": "Algún Día",
+    "minMonths": "Mínimo de meses",
+    "maxMonths": "Máximo de meses"
+  },
+  "manageTabs": {
+    "title": "Gestión",
+    "tabsDelayed": "Aplazados",
+    "noTabs": "No hay pestañas aplazadas",
+    "noDelayedTabs": "No tienes ninguna pestaña aplazada en este momento. Aplaza una pestaña haciendo clic en el icono de la extensión.",
+    "wakeUpTime": "Hora de despertar",
+    "timeLeft": "Tiempo restante",
+    "delayedUntil": "Aplazada hasta",
+    "now": "Ahora",
+    "actions": {
+      "wakeNow": "Despertar Ahora",
+      "delete": "Eliminar",
+      "edit": "Editar"
+    }
+  }
+}

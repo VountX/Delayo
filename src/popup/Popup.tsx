@@ -1,4 +1,5 @@
 import React from 'react';
+import '../i18n';
 
 import useTheme from '../utils/useTheme';
 import Router from './router';

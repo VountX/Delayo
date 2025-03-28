@@ -2,10 +2,10 @@ import { ManifestV3Export } from '@crxjs/vite-plugin';
 
 const manifest: ManifestV3Export = {
   manifest_version: 3,
-  name: 'Delayo',
+  name: '__MSG_appName__',
   version: '1.1.0',
-  description:
-    'Temporarily put tabs to sleep and have them reappear when you need them',
+  description: '__MSG_appDesc__',
+  default_locale: 'en',
   permissions: ['storage', 'tabs', 'alarms', 'notifications', 'contextMenus'],
   action: {
     default_popup: 'popup.html',

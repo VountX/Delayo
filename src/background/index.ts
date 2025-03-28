@@ -129,7 +129,6 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
       );
 
       if (delayedTab && delayedTab.url) {
-        // Create a new tab with the delayed URL
         await chrome.tabs.create({ url: delayedTab.url });
 
         // Show a notification
@@ -172,16 +171,13 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
               when: nextWakeTime,
             });
 
-            // Remove the console.log statement
           } else {
-            // End of recurrence, remove the tab from storage
             const updatedTabs = delayedTabs.filter(
               (tab: DelayedTab) => tab.id !== tabId
             );
             await chrome.storage.local.set({ delayedTabs: updatedTabs });
           }
         } else {
-          // Not recurring, remove the tab from storage
           const updatedTabs = delayedTabs.filter(
             (tab: DelayedTab) => tab.id !== tabId
           );
@@ -189,9 +185,9 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
         }
       }
     } catch (error) {
-      // Silently acknowledge error
+      //
       if (chrome.runtime.lastError) {
-        // Deliberately empty to acknowledge the error
+        //
       }
     }
   }
@@ -215,7 +211,6 @@ chrome.runtime.onStartup.addListener(async () => {
     await Promise.all(
       tabsToWake.map(async (tab: DelayedTab) => {
         if (tab.url) {
-          // Open the tab
           await chrome.tabs.create({ url: tab.url });
 
           // If it's a recurring tab, schedule the next occurrence
@@ -244,10 +239,8 @@ chrome.runtime.onStartup.addListener(async () => {
       })
     );
 
-    // Update storage with remaining tabs (which now includes rescheduled recurring tabs)
     await chrome.storage.local.set({ delayedTabs: remainingTabs });
 
-    // Create alarms for all remaining delayed tabs
     await Promise.all(
       remainingTabs.map((tab: DelayedTab) =>
         chrome.alarms.create(`delayed-tab-${tab.id}`, {
@@ -256,9 +249,9 @@ chrome.runtime.onStartup.addListener(async () => {
       )
     );
   } catch (error) {
-    // Silently acknowledge error
+    //
     if (chrome.runtime.lastError) {
-      // Deliberately empty to acknowledge the error
+      //
     }
   }
 });

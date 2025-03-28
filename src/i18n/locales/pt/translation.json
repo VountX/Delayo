@@ -1,0 +1,107 @@
+{
+  "common": {
+    "loading": "Carregando...",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "back": "Voltar",
+    "settings": "Configurações",
+    "tabs": "Abas",
+    "tabs.singular": "Aba",
+    "theme": {
+      "light": "Claro",
+      "dark": "Escuro",
+      "system": "Sistema"
+    }
+  },
+  "popup": {
+    "title": "Delayo",
+    "delay": "Adiar",
+    "selected": "selecionadas",
+    "inWindow": "na janela",
+    "tabs": {
+      "active": "Aba Ativa",
+      "highlighted": "Abas Selecionadas",
+      "window": "Janela Atual"
+    },
+    "delayOptions": {
+      "laterToday": "Mais Tarde Hoje (em {{hours}} horas)",
+      "tonight": "Esta Noite (às {{time}})",
+      "tomorrow": "Amanhã (às {{time}})",
+      "weekend": "Este Fim de Semana ({{day}}, {{time}})",
+      "nextWeek": "Próxima Semana ({{day}}, {{time}})",
+      "nextMonth": "Próximo Mês",
+      "someday": "Um Dia",
+      "custom": "Data e Hora Personalizada",
+      "recurring": "Recorrente"
+    },
+    "weekdays": {
+      "sunday": "Domingo",
+      "monday": "Segunda",
+      "tuesday": "Terça",
+      "wednesday": "Quarta",
+      "thursday": "Quinta",
+      "friday": "Sexta",
+      "saturday": "Sábado"
+    },
+    "actions": {
+      "manageTabs": "Gerenciar Abas Adiadas",
+      "openSettings": "Configurações"
+    }
+  },
+  "customDelay": {
+    "title": "Adiamento Personalizado",
+    "selectDateTime": "Selecione Data e Hora",
+    "delayTab": "Adiar Aba"
+  },
+  "recurringDelay": {
+    "title": "Adiamento Recorrente",
+    "frequency": "Frequência",
+    "daily": "Diário",
+    "weekly": "Semanal",
+    "monthly": "Mensal",
+    "selectTime": "Selecione o Horário",
+    "selectDay": "Selecione o Dia",
+    "delayTab": "Definir Adiamento Recorrente"
+  },
+  "settings": {
+    "title": "Configurações",
+    "general": "Geral",
+    "language": "Idioma",
+    "theme": "Tema",
+    "reset": "Redefinir",
+    "notifications": "Notificações",
+    "enableNotifications": "Ativar Notificações",
+    "defaultDelayOptions": "Opções de Adiamento Padrão",
+    "laterToday": "Mais Tarde Hoje",
+    "hours": "horas",
+    "tonight": "Esta Noite",
+    "tomorrow": "Amanhã",
+    "weekend": "Este Fim de Semana",
+    "day": "Dia",
+    "nextWeek": "Próxima Semana",
+    "nextMonth": "Próximo Mês",
+    "sameDayOfMonth": "Mesmo dia do mês",
+    "sameDayOfWeek": "Mesmo dia da semana",
+    "specificDay": "Dia específico",
+    "someday": "Um Dia",
+    "minMonths": "Mínimo de meses",
+    "maxMonths": "Máximo de meses"
+  },
+  "manageTabs": {
+    "title": "Gerenciamento",
+    "tabsDelayed": "Adiados",
+    "noTabs": "Nenhuma aba adiada",
+    "noDelayedTabs": "Você não tem nenhuma aba adiada no momento. Adie uma aba clicando no ícone da extensão.",
+    "wakeUpTime": "Horário de despertar",
+    "timeLeft": "Tempo restante",
+    "delayedUntil": "Adiada até",
+    "now": "Agora",
+    "actions": {
+      "wakeNow": "Despertar Agora",
+      "delete": "Excluir",
+      "edit": "Editar"
+    }
+  }
+}

@@ -226,16 +226,13 @@ function RecurringDelayView(): React.ReactElement {
           // Adicionar ID da aba à lista para fechar
           tabIds.push(tab.id);
         }
-        
-        // Salvar informações das abas adiadas
+
         await chrome.storage.local.set({ delayedTabs });
 
-        // Fechar todas as abas
         if (chrome.tabs && tabIds.length > 0) {
           await chrome.tabs.remove(tabIds);
         }
 
-        // Close the popup
         if (window.close) {
           window.close();
         }
@@ -270,7 +267,6 @@ function RecurringDelayView(): React.ReactElement {
           </h2>
         </div>
 
-        {/* Exibição da aba ou abas selecionadas */}
         <div className='mb-4'>
           <div className='text-sm font-medium text-base-content/80 mb-2'>Adiando:</div>
           <div className='rounded-lg bg-base-100/70 p-4 shadow-sm transition-all duration-200 hover:bg-base-100'>

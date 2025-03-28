@@ -1,13 +1,17 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
+import '../i18n';
 
 import Options from './Options';
 
-// Fix import path to point to the correct location
 import '../index.css';
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
-    <Options />
-  </React.StrictMode>
-);
+const root = document.getElementById('root');
+
+if (root) {
+  createRoot(root).render(
+    <React.StrictMode>
+      <Options />
+    </React.StrictMode>
+  );
+}

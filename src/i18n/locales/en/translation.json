@@ -1,0 +1,107 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "settings": "Settings",
+    "tabs": "Tabs",
+    "tabs.singular": "Tab",
+    "theme": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    }
+  },
+  "popup": {
+    "title": "Delayo",
+    "delay": "Delay",
+    "selected": "selected",
+    "inWindow": "in this window",
+    "tabs": {
+      "active": "Active Tab",
+      "highlighted": "Selected Tabs",
+      "window": "Current Window"
+    },
+    "delayOptions": {
+      "laterToday": "Later today (in {{hours}} hours)",
+      "tonight": "Tonight (at {{time}})",
+      "tomorrow": "Tomorrow (at {{time}})",
+      "weekend": "This weekend ({{day}}, {{time}})",
+      "nextWeek": "Next week ({{day}}, {{time}})",
+      "nextMonth": "Next month",
+      "someday": "Someday",
+      "custom": "Custom date & time",
+      "recurring": "Recurring"
+    },
+    "weekdays": {
+      "sunday": "Sunday",
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday"
+    },
+    "actions": {
+      "manageTabs": "Manage Delayed Tabs",
+      "openSettings": "Settings"
+    }
+  },
+  "customDelay": {
+    "title": "Custom Delay",
+    "selectDateTime": "Select Date & Time",
+    "delayTab": "Delay Tab"
+  },
+  "recurringDelay": {
+    "title": "Recurring Schedule",
+    "frequency": "Frequency",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "monthly": "Monthly",
+    "selectTime": "Select Time",
+    "selectDay": "Select Day",
+    "delayTab": "Schedule Recurring Delay"
+  },
+  "settings": {
+    "title": "Settings",
+    "general": "General",
+    "language": "Language",
+    "theme": "Theme",
+    "reset": "Reset",
+    "notifications": "Notifications",
+    "enableNotifications": "Enable Notifications",
+    "defaultDelayOptions": "Default Delay Options",
+    "laterToday": "Later Today",
+    "hours": "hours",
+    "tonight": "Tonight",
+    "tomorrow": "Tomorrow",
+    "weekend": "This Weekend",
+    "day": "Day",
+    "nextWeek": "Next Week",
+    "nextMonth": "Next Month",
+    "sameDayOfMonth": "Same day of month",
+    "sameDayOfWeek": "Same day of week",
+    "specificDay": "Specific day",
+    "someday": "Someday",
+    "minMonths": "Minimum months",
+    "maxMonths": "Maximum months"
+  },
+  "manageTabs": {
+    "title": "Management",
+    "tabsDelayed": "Delayed",
+    "noTabs": "No tabs delayed",
+    "noDelayedTabs": "No tabs delayed yet. Click the extension icon to delay one.",
+    "wakeUpTime": "Wake up time",
+    "timeLeft": "Time left",
+    "delayedUntil": "Delayed until",
+    "now": "Now",
+    "actions": {
+      "wakeNow": "Wake Now",
+      "delete": "Delete",
+      "edit": "Edit"
+    }
+  }
+}

@@ -1,12 +1,14 @@
 import React from 'react';
 import { Link } from '@tanstack/react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useTranslation } from 'react-i18next';
 
 import useTheme from '../../utils/useTheme';
 import DelaySettingsComponent from '../../options/DelaySettings';
 
 function SettingsView(): React.ReactElement {
   const { theme, toggleTheme } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <div className='card w-[40rem] rounded-none bg-base-300 shadow-md'>
@@ -20,7 +22,7 @@ function SettingsView(): React.ReactElement {
             >
               <FontAwesomeIcon icon='arrow-left' />
             </Link>
-            <h2 className='card-title font-bold text-delayo-orange'>Configurações</h2>
+            <h2 className='card-title font-bold text-delayo-orange'>{t('common.settings')}</h2>
           </div>
           <button
             type='button'
@@ -38,7 +40,7 @@ function SettingsView(): React.ReactElement {
         </div>
 
         <div className='overflow-y-auto max-h-[400px] pr-2 pb-2'>
-          <DelaySettingsComponent />
+          <DelaySettingsComponent isPopup={true} />
         </div>
       </div>
     </div>

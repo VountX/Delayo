@@ -1,36 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import { DelayedTab } from '@types';
+import { useTranslation } from 'react-i18next';
 import useTheme from '@utils/useTheme.tsx';
+import LanguageSelector from '../components/LanguageSelector';
 
 import DelaySettingsComponent from './DelaySettings';
+import './options.css';
 
-// Defining the component as a function declaration per ESLint rule
 function Options(): React.ReactElement {
   const [delayedTabItems, setDelayedTabs] = useState<DelayedTab[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'tabs' | 'settings'>('tabs');
   const [selectedTabs, setSelectedTabs] = useState<number[]>([]);
   const { theme, toggleTheme } = useTheme();
+  const { t } = useTranslation();
 
-  // Moved loadDelayedTabs before its usage to fix hoisting issue
   const loadDelayedTabs = async (): Promise<void> => {
     try {
       setLoading(true);
       const { delayedTabs = [] } =
         await chrome.storage.local.get('delayedTabs');
-      // Sort tabs by wake time
       const sortedTabs = [...delayedTabs].sort(
         (a, b) => a.wakeTime - b.wakeTime
       );
       setDelayedTabs(sortedTabs);
     } catch (error) {
-      // Silently handle error without console.error
+      //
     } finally {
       setLoading(false);
     }
   };
 
-  // Load delayed tabs on component mount
   useEffect(() => {
     loadDelayedTabs();
   }, []);
@@ -38,39 +38,52 @@ function Options(): React.ReactElement {
   const wakeTabNow = async (tab: DelayedTab): Promise<void> => {
     try {
       if (tab.url) {
-        // Create a new tab with the delayed URL
         await chrome.tabs.create({ url: tab.url });
-        // Remove the tab from storage
         const updatedTabs = delayedTabItems.filter((t) => t.id !== tab.id);
         await chrome.storage.local.set({ delayedTabs: updatedTabs });
-        // Cancel the alarm
         await chrome.alarms.clear(`delayed-tab-${tab.id}`);
-        // Update state
         setDelayedTabs(updatedTabs);
         setSelectedTabs(selectedTabs.filter(id => id !== tab.id));
       }
     } catch (error) {
-      // Silently handle error without console.error
+      //
     }
   };
 
   const removeTab = async (tab: DelayedTab): Promise<void> => {
     try {
-      // Remove the tab from storage
       const updatedTabs = delayedTabItems.filter((t) => t.id !== tab.id);
       await chrome.storage.local.set({ delayedTabs: updatedTabs });
-      // Cancel the alarm
       await chrome.alarms.clear(`delayed-tab-${tab.id}`);
-      // Update state
       setDelayedTabs(updatedTabs);
       setSelectedTabs(selectedTabs.filter(id => id !== tab.id));
     } catch (error) {
-      // Silently handle error without console.error
+      //
     }
   };
 
-  const formatDate = (timestamp: number): string =>
-    new Date(timestamp).toLocaleString();
+  const formatDate = (timestamp: number): string => {
+    // Obter o idioma atual do i18n
+    const locale = document.documentElement.lang || navigator.language || 'pt-BR';
+    
+    // Configurar formatação de acordo com o idioma
+    const isEnglish = locale.startsWith('en');
+    // As variáveis isSpanish e isPortuguese foram removidas pois não são utilizadas
+    
+    // Criar objeto de data
+    const date = new Date(timestamp);
+    
+    // Formatar a data de acordo com o idioma
+    return date.toLocaleString(locale, {
+      year: 'numeric',
+      month: 'long', // Mês por extenso (será traduzido automaticamente)
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: isEnglish, // Usar AM/PM apenas para inglês
+      // A ordem de data (dia/mês/ano ou mês/dia/ano) é automática com toLocaleString
+    });
+  };
 
   const calculateTimeLeft = (wakeTime: number): string => {
     const now = Date.now();
@@ -84,7 +97,6 @@ function Options(): React.ReactElement {
     return `${minutes}m`;
   };
 
-  // Rendering helpers using DaisyUI components
   const renderLoading = (): React.ReactElement => (
     <div className='p-8 text-center'>
       <span className='loading loading-spinner loading-lg' />
@@ -92,11 +104,11 @@ function Options(): React.ReactElement {
   );
 
   const renderEmptyState = (): React.ReactElement => (
-    <div className='card w-full bg-base-200 border border-base-300 shadow-sm hover:shadow-md transition-shadow duration-300'>
+    <div className='card w-full bg-base-300 border border-base-300 shadow-sm hover:shadow-md transition-shadow duration-300'>
       <div className='card-body text-center'>
-        <h2 className='card-title justify-center'>Sem abas adiadas</h2>
+        <h2 className='card-title justify-center'>{t('manageTabs.noTabs')}</h2>
         <p>
-          Você não tem nenhuma aba adiada no momento. Adie uma aba clicando no ícone da extensão.
+          {t('manageTabs.noDelayedTabs')}
         </p>
       </div>
     </div>
@@ -116,7 +128,7 @@ function Options(): React.ReactElement {
       setDelayedTabs(updatedTabs);
       setSelectedTabs([]);
     } catch (error) {
-      // Silently handle error without console.error
+      //
     }
   };
 
@@ -129,7 +141,7 @@ function Options(): React.ReactElement {
   };
 
   const renderTabsTable = (): React.ReactElement => (
-    <div className='card w-full bg-base-200 border border-base-300 shadow-sm hover:shadow-md transition-shadow duration-300'>
+    <div className='card w-full bg-base-300 border border-base-300 shadow-sm hover:shadow-md transition-shadow duration-300'>
       <div className='card-body p-0'>
         <div className='w-full overflow-x-auto'>
           <table className='table w-full [&>tbody>tr:nth-child(odd)]:bg-base-100 [&>tbody>tr:nth-child(even)]:bg-base-300 [&>tbody>tr:hover]:bg-base-100'>
@@ -151,9 +163,9 @@ function Options(): React.ReactElement {
                     />
                   </label>
                 </th>
-                <th className='w-1/4'>Abas</th>
-                <th className='w-1/4'>Adiada até</th>
-                <th className='w-1/6'>Tempo restante</th>
+                <th className='w-1/4'>{t('common.tabs')}</th>
+                <th className='w-1/4'>{t('manageTabs.delayedUntil')}</th>
+                <th className='w-1/6'>{t('manageTabs.timeLeft')}</th>
                 <th className='w-1/3'>Ações</th>
               </tr>
             </thead>
@@ -224,7 +236,7 @@ function Options(): React.ReactElement {
                 className='btn btn-primary'
                 onClick={wakeSelectedTabs}
               >
-                Acordar {selectedTabs.length} {selectedTabs.length === 1 ? 'Aba' : 'Abas'}
+                {t('manageTabs.actions.wakeNow')} {selectedTabs.length} {selectedTabs.length === 1 ? t('common.tabs.singular', 'Tab') : t('common.tabs')}
               </button>
             </div>
           )}
@@ -233,7 +245,6 @@ function Options(): React.ReactElement {
     </div>
   );
 
-  // Using if/else instead of nested ternaries
   let content: React.ReactElement;
   if (loading) {
     content = renderLoading();
@@ -246,7 +257,7 @@ function Options(): React.ReactElement {
   return (
     <div className='container mx-auto max-w-fit p-4'>
       <div className='mb-6 flex items-center justify-between'>
-        <h1 className='text-2xl font-bold'>Gerenciar Abas Adormecidas</h1>
+        <h1 className='text-2xl font-bold'>{t('manageTabs.title')}</h1>
         <button
           type='button'
           className='btn btn-circle btn-ghost btn-sm transition-all duration-200 hover:bg-base-100'
@@ -273,17 +284,24 @@ function Options(): React.ReactElement {
           className={`tab tab-bordered ${activeTab === 'tabs' ? 'tab-active !border-delayo-orange !border-b-[3px]' : ''}`}
           onClick={() => setActiveTab('tabs')}
         >
-          <span className='font-bold'>Abas Adiadas</span>
+          <span className='font-bold'>{t('manageTabs.tabsDelayed')}</span>
         </a>
         <a
           className={`tab tab-bordered ${activeTab === 'settings' ? 'tab-active !border-delayo-orange !border-b-[3px]' : ''}`}
           onClick={() => setActiveTab('settings')}
         >
-          <span className='font-bold'>Configurações</span>
+          <span className='font-bold'>{t('common.settings')}</span>
         </a>
       </div>
 
-      {activeTab === 'tabs' ? content : <DelaySettingsComponent />}
+      {activeTab === 'tabs' ? content : <div className="settings-width-850"><DelaySettingsComponent isPopup={false} /></div>}
+
+      <div className="form-control mt-4">
+        <label className="label">
+          <span className="label-text font-medium">{t('settings.language')}</span>
+        </label>
+        <LanguageSelector />
+      </div>
 
       <div className='mt-6 text-center text-sm'>
         <div className='flex flex-col items-center justify-center gap-2'>

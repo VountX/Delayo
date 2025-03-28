@@ -4,16 +4,17 @@ import { faHourglassHalf } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from '@tanstack/react-router';
 import { DelayOption } from '@types';
+import { useTranslation } from 'react-i18next';
 
 import useTheme from '../../utils/useTheme';
 
-// Definição do tipo para as configurações de adiamento
 interface DelaySettings {
   laterToday: number; // horas
   tonightTime: string; // formato HH:MM
   tomorrowTime: string; // formato HH:MM
   weekendDay: 'saturday' | 'sunday';
   weekendTime: string; // formato HH:MM
+  nextWeekSameDay: boolean; // se true, mesmo dia da semana; se false, dia específico
   nextWeekDay: number; // 0-6 (0 = domingo, 1 = segunda, etc.)
   nextWeekTime: string; // formato HH:MM
   nextMonthSameDay: boolean; // se true, mesmo dia do mês; se false, mesmo dia da semana
@@ -22,6 +23,7 @@ interface DelaySettings {
 }
 
 function MainView(): React.ReactElement {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<chrome.tabs.Tab | null>(null);
   const [highlightedTabs, setHighlightedTabs] = useState<chrome.tabs.Tab[]>([]);
   const [allWindowTabs, setAllWindowTabs] = useState<chrome.tabs.Tab[]>([]);
@@ -36,6 +38,7 @@ function MainView(): React.ReactElement {
     nextWeekDay: 1, // Segunda-feira
     nextWeekTime: '09:00', // 9h
     nextMonthSameDay: true,
+    nextWeekSameDay: true,
     somedayMinMonths: 3, // mínimo 3 meses
     somedayMaxMonths: 12, // máximo 12 meses
   });
@@ -113,7 +116,6 @@ function MainView(): React.ReactElement {
     loadSettings();
   }, []);
 
-  // Função para extrair horas e minutos de uma string no formato HH:MM
   const getTimeFromString = (
     timeString: string
   ): { hours: number; minutes: number } => {
@@ -124,12 +126,12 @@ function MainView(): React.ReactElement {
   const delayOptions: DelayOption[] = [
     {
       id: 'later_today',
-      label: `Mais Tarde (em ${settings.laterToday}h)`,
+      label: t('popup.delayOptions.laterToday', { hours: settings.laterToday }),
       hours: settings.laterToday,
     },
     {
       id: 'tonight',
-      label: `Esta Noite (às ${settings.tonightTime})`,
+      label: t('popup.delayOptions.tonight', { time: settings.tonightTime }),
       custom: true,
       calculateTime: () => {
         const { hours, minutes } = getTimeFromString(settings.tonightTime);
@@ -144,7 +146,7 @@ function MainView(): React.ReactElement {
     },
     {
       id: 'tomorrow',
-      label: `Amanhã (às ${settings.tomorrowTime})`,
+      label: t('popup.delayOptions.tomorrow', { time: settings.tomorrowTime }),
       custom: true,
       calculateTime: () => {
         const { hours, minutes } = getTimeFromString(settings.tomorrowTime);
@@ -156,7 +158,10 @@ function MainView(): React.ReactElement {
     },
     {
       id: 'weekend',
-      label: `Este Fim de Semana (${settings.weekendDay === 'saturday' ? 'Sábado' : 'Domingo'}, ${settings.weekendTime})`,
+      label: t('popup.delayOptions.weekend', { 
+        day: t(`popup.weekdays.${settings.weekendDay}`), 
+        time: settings.weekendTime 
+      }),
       custom: true,
       calculateTime: () => {
         const { hours, minutes } = getTimeFromString(settings.weekendTime);
@@ -185,13 +190,37 @@ function MainView(): React.ReactElement {
     },
     {
       id: 'next_week',
-      label: `Próxima Semana (${['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'][settings.nextWeekDay]}, ${settings.nextWeekTime})`,
+      label: (() => {
+        if (settings.nextWeekSameDay) {
+          // Mesmo dia da semana
+          const today = new Date();
+          const dayName = t(`popup.weekdays.${['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][today.getDay()]}`);
+          // Não mostrar mais o horário na label
+          return t('popup.delayOptions.nextWeek', { day: dayName, time: '' }).replace(', ', '');
+        } else {
+          // Dia específico
+          const dayName = t(`popup.weekdays.${['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][settings.nextWeekDay]}`);
+          // Não mostrar mais o horário na label
+          return t('popup.delayOptions.nextWeek', { day: dayName, time: '' }).replace(', ', '');
+        }
+      })(),
       custom: true,
       calculateTime: () => {
-        const { hours, minutes } = getTimeFromString(settings.nextWeekTime);
         const today = new Date();
-        const currentDay = today.getDay(); // 0 é Domingo, 1 é Segunda
-        const targetDay = settings.nextWeekDay;
+        // Usar o horário atual em vez do horário configurado
+        const hours = today.getHours();
+        const minutes = today.getMinutes();
+        let targetDay;
+        
+        if (settings.nextWeekSameDay) {
+          // Usar o mesmo dia da semana
+          targetDay = today.getDay();
+        } else {
+          // Usar o dia específico configurado
+          targetDay = settings.nextWeekDay;
+        }
+        
+        const currentDay = today.getDay();
 
         // Calcula quantos dias faltam até o dia alvo na próxima semana
         let daysUntilTarget;
@@ -208,13 +237,98 @@ function MainView(): React.ReactElement {
 
         const targetDate = new Date();
         targetDate.setDate(today.getDate() + daysUntilTarget);
+        // Usar o horário atual (hora em que foi adiada)
         targetDate.setHours(hours, minutes, 0, 0);
         return targetDate.getTime();
       },
     },
     {
       id: 'next_month',
-      label: 'Próximo Mês',
+      label: (() => {
+        const today = new Date();
+        const targetDate = new Date();
+        let formattedDate = '';
+        
+        if (settings.nextMonthSameDay) {
+          // Mesmo dia do mês seguinte
+          targetDate.setMonth(today.getMonth() + 1);
+          // Verifica se o dia existe no próximo mês
+          const lastDayOfNextMonth = new Date(
+            today.getFullYear(),
+            today.getMonth() + 2,
+            0
+          ).getDate();
+          if (today.getDate() > lastDayOfNextMonth) {
+            targetDate.setDate(lastDayOfNextMonth);
+          }
+          // Ajuste para formatar o mês no idioma correto
+          const locale = document.documentElement.lang || navigator.language || 'pt-BR';
+          formattedDate = targetDate.toLocaleDateString(locale, { day: 'numeric', month: 'long' });
+        } else {
+          // Mesmo dia da semana no próximo mês
+          const currentDay = today.getDay();
+          const currentWeekOfMonth = Math.ceil(today.getDate() / 7);
+
+          // Avança para o próximo mês
+          targetDate.setMonth(today.getMonth() + 1);
+          // Define o dia 1 do próximo mês
+          targetDate.setDate(1);
+
+          // Encontra o primeiro dia da semana correspondente no próximo mês
+          while (targetDate.getDay() !== currentDay) {
+            targetDate.setDate(targetDate.getDate() + 1);
+          }
+
+          // Avança para a semana correspondente
+          targetDate.setDate(
+            targetDate.getDate() + (currentWeekOfMonth - 1) * 7
+          );
+
+          // Verifica se ainda estamos no mesmo mês
+          if (targetDate.getMonth() !== (today.getMonth() + 1) % 12) {
+            // Se passou para o mês seguinte, volta para a última ocorrência do dia da semana no mês desejado
+            targetDate.setDate(1);
+            targetDate.setMonth((today.getMonth() + 1) % 12);
+
+            let lastOccurrence = 0;
+            const daysInMonth = new Date(
+              targetDate.getFullYear(),
+              targetDate.getMonth() + 1,
+              0
+            ).getDate();
+
+            for (let i = 1; i <= daysInMonth; i++) {
+              targetDate.setDate(i);
+              if (targetDate.getDay() === currentDay) {
+                lastOccurrence = i;
+              }
+            }
+
+            targetDate.setDate(lastOccurrence);
+          }
+          
+          // Ajuste para formatar o mês no idioma correto
+          const locale = document.documentElement.lang || navigator.language || 'pt-BR';
+          formattedDate = targetDate.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' });
+        }
+        
+        // Mantém a mesma hora do dia, formatando de acordo com o idioma
+        const locale = document.documentElement.lang || navigator.language || 'pt-BR';
+        let timeStr;
+        
+        // Formata a hora de acordo com o idioma
+        if (locale.startsWith('en')) {
+          // Formato 12h AM/PM para inglês
+          const hours = today.getHours();
+          const ampm = hours >= 12 ? 'PM' : 'AM';
+          const hours12 = hours % 12 || 12; // Converte 0 para 12
+          timeStr = `${hours12}:${today.getMinutes().toString().padStart(2, '0')} ${ampm}`;
+        } else {
+          // Formato 24h para português e espanhol
+          timeStr = `${today.getHours().toString().padStart(2, '0')}:${today.getMinutes().toString().padStart(2, '0')}`;
+        }
+        return `${t('popup.delayOptions.nextMonth')} (${formattedDate}, ${timeStr})`;
+      })(),
       custom: true,
       calculateTime: () => {
         const today = new Date();
@@ -276,14 +390,14 @@ function MainView(): React.ReactElement {
           }
         }
 
-        // Mantém a mesma hora do dia
+        // Mantém a mesma hora do dia em que a aba foi adiada
         targetDate.setHours(today.getHours(), today.getMinutes(), 0, 0);
         return targetDate.getTime();
       },
     },
     {
       id: 'someday',
-      label: 'Um Dia (Aleatório)',
+      label: t('popup.delayOptions.someday'),
       custom: true,
       calculateTime: () => {
         const today = new Date();
@@ -322,7 +436,6 @@ function MainView(): React.ReactElement {
   };
 
   const handleDelay = async (option: DelayOption): Promise<void> => {
-    // Salvar o modo selecionado no armazenamento local para ser usado em outras telas
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
       await chrome.storage.local.set({ selectedMode });
     }
@@ -392,7 +505,7 @@ function MainView(): React.ReactElement {
   }
 
   return (
-    <div className='card w-[40rem] rounded-none bg-base-300 shadow-md'>
+    <div className='card w-[40rem] rounded-none bg-base-300 shadow-md max-h-[600px] overflow-hidden'>
       <div className='card-body p-6'>
         <div className='mb-5 flex items-center justify-between'>
           <h2 className='card-title flex items-center font-bold text-delayo-orange'>
@@ -430,17 +543,16 @@ function MainView(): React.ReactElement {
           </div>
         </div>
 
-        {/* Seletor de modo de adiamento */}
         <div className='mb-5 flex flex-col space-y-3'>
           <div className='flex items-center justify-between'>
-            <div className='text-sm font-medium text-base-content/80'>Adiar:</div>
+            <div className='text-sm font-medium text-base-content/80'>{t('popup.delay')}:</div>
             <div className='flex space-x-2'>
               <button
                 type='button'
                 className={`btn btn-sm ${selectedMode === 'active' ? 'btn-primary' : 'btn-outline'}`}
                 onClick={() => setSelectedMode('active')}
               >
-                Aba Ativa
+                {t('popup.tabs.active')}
               </button>
               <button
                 type='button'
@@ -448,19 +560,18 @@ function MainView(): React.ReactElement {
                 onClick={() => setSelectedMode('highlighted')}
                 disabled={highlightedTabs.length <= 1}
               >
-                Abas Selecionadas {highlightedTabs.length > 1 ? `(${highlightedTabs.length})` : ''}
+                {t('popup.tabs.highlighted')} {highlightedTabs.length > 1 ? `(${highlightedTabs.length})` : ''}
               </button>
               <button
                 type='button'
                 className={`btn btn-sm ${selectedMode === 'window' ? 'btn-primary' : 'btn-outline'}`}
                 onClick={() => setSelectedMode('window')}
               >
-                Toda a Janela {allWindowTabs.length > 0 ? `(${allWindowTabs.length})` : ''}
+                {t('popup.tabs.window')} {allWindowTabs.length > 0 ? `(${allWindowTabs.length})` : ''}
               </button>
             </div>
           </div>
-          
-          {/* Exibição da aba ou abas selecionadas */}
+
           <div className='rounded-lg bg-base-100/70 p-4 shadow-sm transition-all duration-200 hover:bg-base-100'>
             {selectedMode === 'active' && activeTab && (
               <div className='flex items-center'>
@@ -482,13 +593,13 @@ function MainView(): React.ReactElement {
             
             {selectedMode === 'highlighted' && (
               <div className='text-sm font-medium text-base-content/80'>
-                {highlightedTabs.length} {highlightedTabs.length === 1 ? 'aba selecionada' : 'abas selecionadas'}
+                {highlightedTabs.length} {highlightedTabs.length === 1 ? t('common.tabs.singular') : t('common.tabs')} {t('popup.selected')}
               </div>
             )}
             
             {selectedMode === 'window' && (
               <div className='text-sm font-medium text-base-content/80'>
-                {allWindowTabs.length} {allWindowTabs.length === 1 ? 'aba na janela' : 'abas na janela'}
+                {allWindowTabs.length} {allWindowTabs.length === 1 ? t('common.tabs.singular') : t('common.tabs')} {t('popup.inWindow')}
               </div>
             )}
           </div>
@@ -529,7 +640,6 @@ function MainView(): React.ReactElement {
             </div>
           ))}
 
-          {/* Custom Date/Time button */}
           <div className='card'>
             <Link
               to='/custom-delay'
@@ -546,12 +656,11 @@ function MainView(): React.ReactElement {
                 className='mb-3 h-5 w-5 transform text-neutral-400 transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:text-delayo-orange'
               />
               <span className='text-center text-xs font-medium text-base-content/80 group-hover:text-base-content'>
-                Escolher Data/Hora
+                {t('popup.delayOptions.custom')}
               </span>
             </Link>
           </div>
 
-          {/* Recurring Delay button */}
           <div className='card'>
             <Link
               to='/recurring-delay'
@@ -568,13 +677,12 @@ function MainView(): React.ReactElement {
                 className='mb-3 h-5 w-5 transform text-neutral-400 transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:text-delayo-orange'
               />
               <span className='text-center text-xs font-medium text-base-content/80 group-hover:text-base-content'>
-                Adiamento Recorrente
+                {t('popup.delayOptions.recurring')}
               </span>
             </Link>
           </div>
         </div>
-        
-        {/* Manage Delayed Tabs button */}
+
         <div className='mt-6 flex justify-center'>
           <Link
             to='/manage-tabs'
@@ -585,7 +693,7 @@ function MainView(): React.ReactElement {
               icon='list-ul'
               className='mr-2 h-4 w-4'
             />
-            Gerenciar Abas Adiadas
+            {t('popup.actions.manageTabs')}
           </Link>
         </div>
       </div>
