@@ -9,7 +9,6 @@
     ],
     "module": "ESNext",
     "skipLibCheck": true,
-    /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
@@ -28,7 +27,6 @@
         "./src/utils/*"
       ]
     },
-    /* Linting */
     "strict": true,
     "strictNullChecks": true,
     "noUnusedLocals": true,
@@ -45,9 +43,8 @@
     "node_modules",
     "dist"
   ],
-  // "references": [{ "path": "./tsconfig.node.json" }],
   "types": [
     "chrome",
-    "node"
+//    "node"
   ]
 }

@@ -262,7 +262,9 @@ function MainView(): React.ReactElement {
             targetDate.setDate(lastDayOfNextMonth);
           }
           // Ajuste para formatar o mês no idioma correto
-          const locale = document.documentElement.lang || navigator.language || 'pt-BR';
+          // Usa o idioma configurado no i18n em vez de document.documentElement.lang
+          const { i18n } = useTranslation();
+          const locale = i18n.language || navigator.language || 'pt-BR';
           formattedDate = targetDate.toLocaleDateString(locale, { day: 'numeric', month: 'long' });
         } else {
           // Mesmo dia da semana no próximo mês
@@ -308,12 +310,16 @@ function MainView(): React.ReactElement {
           }
           
           // Ajuste para formatar o mês no idioma correto
-          const locale = document.documentElement.lang || navigator.language || 'pt-BR';
+          // Usa o idioma configurado no i18n em vez de document.documentElement.lang
+          const { i18n } = useTranslation();
+          const locale = i18n.language || navigator.language || 'pt-BR';
           formattedDate = targetDate.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' });
         }
         
         // Mantém a mesma hora do dia, formatando de acordo com o idioma
-        const locale = document.documentElement.lang || navigator.language || 'pt-BR';
+        // Usa o idioma configurado no i18n em vez de document.documentElement.lang
+        const { i18n } = useTranslation();
+        const locale = i18n.language || navigator.language || 'pt-BR';
         let timeStr;
         
         // Formata a hora de acordo com o idioma

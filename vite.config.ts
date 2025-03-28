@@ -25,12 +25,20 @@ export default defineConfig({
     },
   },
   build: {
+    minify: 'esbuild',
+    target: 'es2020',
     rollupOptions: {
-      input: {
-        popup: resolve(__dirname, 'popup.html'),
-        options: resolve(__dirname, 'options.html'),
-        background: resolve(__dirname, 'src/background/index.ts'),
-      },
+      // input: {
+      //   popup: resolve(__dirname, 'popup.html'),
+      //   options: resolve(__dirname, 'options.html'),
+      //   background: resolve(__dirname, 'src/background/index.ts'),
+      // },
+      output: {
+        manualChunks: undefined,
+      }
     },
+  },
+  optimizeDeps: {
+    exclude: ['moment']
   },
 });

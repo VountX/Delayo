@@ -10,6 +10,7 @@ dist-ssr/
 build/
 out/
 *.local
+release/
 
 # 🧪 Logs
 logs/

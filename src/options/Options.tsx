@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { DelayedTab } from '@types';
 import { useTranslation } from 'react-i18next';
-import useTheme from '@utils/useTheme.tsx';
+import useTheme from '@utils/useTheme';
 import LanguageSelector from '../components/LanguageSelector';
 
 import DelaySettingsComponent from './DelaySettings';
