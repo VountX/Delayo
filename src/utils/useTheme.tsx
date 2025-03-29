@@ -13,13 +13,11 @@ const useTheme = (): {
 } => {
   const [theme, setTheme] = useState<Theme>('light');
 
-  // Load theme from storage or use system preference
   useEffect(() => {
     const loadTheme = async (): Promise<void> => {
       try {
         const { theme: savedTheme } = await chrome.storage.local.get('theme');
 
-        // If no saved theme, check system preference
         if (!savedTheme) {
           const prefersDark = window.matchMedia(
             '(prefers-color-scheme: dark)'
@@ -32,7 +30,7 @@ const useTheme = (): {
           document.documentElement.setAttribute('data-theme', savedTheme);
         }
       } catch (error) {
-        // Use light theme as fallback
+        //
         setTheme('light');
         document.documentElement.setAttribute('data-theme', 'light');
       }
@@ -40,20 +38,17 @@ const useTheme = (): {
 
     loadTheme();
 
-    // Listen for system theme changes
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = async (e: MediaQueryListEvent): Promise<void> => {
       try {
-        // Check if user has explicitly set a preference
         const { theme: savedTheme } = await chrome.storage.local.get('theme');
-        // Only update if user hasn't explicitly set a preference
         if (!savedTheme) {
           const newTheme = e.matches ? 'dark' : 'light';
           setTheme(newTheme);
           document.documentElement.setAttribute('data-theme', newTheme);
         }
       } catch (error) {
-        // Ignore errors
+        // 
       }
     };
 
@@ -61,12 +56,10 @@ const useTheme = (): {
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
-  // Toggle theme function
   const toggleTheme = (): void => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
     document.documentElement.setAttribute('data-theme', newTheme);
-    // Save theme preference
     if (
       typeof chrome !== 'undefined' &&
       chrome.storage &&
@@ -74,7 +67,6 @@ const useTheme = (): {
     ) {
       chrome.storage.local.set({ theme: newTheme });
     } else {
-      // For development mode
       localStorage.setItem('theme', newTheme);
     }
   };

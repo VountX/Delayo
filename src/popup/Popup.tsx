@@ -1,15 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import '../i18n';
 
+import Onboarding from '../components/Onboarding';
 import useTheme from '../utils/useTheme';
 import Router from './router';
 
-// Using function declaration per ESLint rule
 function Popup(): React.ReactElement {
-  // Initialize theme
   useTheme();
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
-  return <Router />;
+  useEffect(() => {
+    const onboardingCompleted = localStorage.getItem('onboardingCompleted');
+    if (!onboardingCompleted) {
+      setShowOnboarding(true);
+    }
+  }, []);
+
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+  };
+
+  return (
+    <>
+      {showOnboarding && <Onboarding onComplete={handleOnboardingComplete} />}
+      <Router />
+    </>
+  );
 }
 
 export default Popup;

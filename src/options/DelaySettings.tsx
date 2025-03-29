@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 
-// Define CSS classes
 const getInputClasses = (isPopup: boolean): string => {
   return `input input-bordered ${isPopup ? 'rounded-lg bg-base-100/70 p-4 shadow-sm transition-all duration-200 hover:bg-base-100 h-12' : ''}`;
 };
@@ -13,7 +12,6 @@ const getSelectClasses = (isPopup: boolean): string => {
   return `select select-bordered ${isPopup ? 'rounded-lg bg-base-100/70 shadow-sm transition-all duration-200 hover:bg-base-100' : ''}`;
 };
 
-// Define the type for delay settings
 interface DelaySettings {
   laterToday: number; // hours
   tonightTime: string; // format HH:MM
@@ -30,17 +28,17 @@ interface DelaySettings {
 
 // Default values for settings
 const defaultSettings: DelaySettings = {
-  laterToday: 3, // 3 hours later
-  tonightTime: '18:00', // 6 PM
-  tomorrowTime: '09:00', // 9 AM
+  laterToday: 3,
+  tonightTime: '18:00',
+  tomorrowTime: '09:00',
   weekendDay: 'saturday',
-  weekendTime: '09:00', // 9 AM
+  weekendTime: '09:00',
   nextWeekSameDay: false,
   nextWeekDay: 1, // Monday
-  nextWeekTime: '09:00', // 9 AM
+  nextWeekTime: '09:00',
   nextMonthSameDay: true,
-  somedayMinMonths: 3, // minimum 3 months
-  somedayMaxMonths: 12, // maximum 12 months
+  somedayMinMonths: 3,
+  somedayMaxMonths: 12,
 };
 
 interface DelaySettingsComponentProps {
@@ -53,7 +51,6 @@ function DelaySettingsComponent({ isPopup = false }: DelaySettingsComponentProps
   const [saved, setSaved] = useState(false);
   const { t } = useTranslation();
 
-  // Load saved settings
   useEffect(() => {
     const loadSettings = async (): Promise<void> => {
       try {
@@ -82,7 +79,6 @@ function DelaySettingsComponent({ isPopup = false }: DelaySettingsComponentProps
     }
   };
 
-  // Reset settings to default values
   const resetSettings = (): void => {
     setSettings(defaultSettings);
   };
@@ -290,7 +286,7 @@ function DelaySettingsComponent({ isPopup = false }: DelaySettingsComponentProps
                 </label>
               </div>
             </div>
-            {/* Nota: Não há input de horário para 'próximo mês' pois será usado o mesmo horário em que a aba foi adiada */}
+            {}
           </div>
 
           {/* Someday (Random) */}

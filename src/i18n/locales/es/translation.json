@@ -59,6 +59,7 @@
     "title": "Aplazamiento Recurrente",
     "frequency": "Frecuencia",
     "daily": "Diario",
+    "weekdays": "En días laborable",
     "weekly": "Semanal",
     "monthly": "Mensual",
     "selectTime": "Seleccionar Hora",
@@ -98,10 +99,47 @@
     "timeLeft": "Tiempo restante",
     "delayedUntil": "Aplazada hasta",
     "now": "Ahora",
+    "select": "Seleccionar",
+    "cancel": "Cancelar",
+    "selectAll": "Seleccionar Todos",
+    "deselectAll": "Desmarcar Todos",
+    "selectMode": "Activar modo de selección múltiple",
+    "cancelSelection": "Cancelar selección",
+    "wakeUp": "Despertar",
+    "remove": "Eliminar",
+    "untitledTab": "Pestaña sin título",
     "actions": {
       "wakeNow": "Despertar Ahora",
       "delete": "Eliminar",
       "edit": "Editar"
     }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Bienvenido a Delayo",
+      "description": "Delayo es una extensión que te permite aplazar pestañas para verlas más tarde, ayudándote a mantener tu navegador organizado."
+    },
+    "delayOptions": {
+      "title": "Opciones de Aplazamiento",
+      "description": "Elige entre varias opciones predefinidas para aplazar tus pestañas a un momento más conveniente."
+    },
+    "customDelay": {
+      "title": "Aplazamiento Personalizado",
+      "description": "Establece una fecha y hora específicas para cuando quieras que la pestaña reaparezca."
+    },
+    "recurring": {
+      "title": "Aplazamiento Recurrente",
+      "description": "Configura pestañas para que reaparezcan en un horario regular: diario, semanal o mensual."
+    },
+    "settings": {
+      "title": "Configuración y Gestión",
+      "description": "Personaliza la extensión y gestiona tus pestañas aplazadas fácilmente.",
+      "gearClick": "Haz clic en el icono de engranaje ⚙️",
+      "rightClick": "Haz clic derecho en el icono de la extensión y selecciona 'Opciones' para acceder a la configuración."
+    },
+    "next": "Siguiente",
+    "back": "Volver",
+    "finish": "Finalizar",
+    "close": "Cerrar"
   }
 }

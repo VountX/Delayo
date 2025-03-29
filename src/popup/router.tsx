@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   createMemoryHistory,
   createRootRoute,
@@ -6,20 +5,19 @@ import {
   createRouter,
   RouterProvider,
 } from '@tanstack/react-router';
+import React from 'react';
 
 import CustomDelayView from './views/CustomDelayView';
 import MainView from './views/MainView';
+import ManageTabsView from './views/ManageTabsView';
 import NotFoundView from './views/NotFoundView';
 import RecurringDelayView from './views/RecurringDelayView';
 import SettingsView from './views/SettingsView';
-import ManageTabsView from './views/ManageTabsView';
 
-// Define the root route
 const rootRoute = createRootRoute({
   notFoundComponent: NotFoundView,
 });
 
-// Define the routes
 const mainRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
@@ -50,7 +48,6 @@ const manageTabsRoute = createRoute({
   component: ManageTabsView,
 });
 
-// Create the route tree using the routes
 const routeTree = rootRoute.addChildren([
   mainRoute,
   customDelayRoute,
@@ -59,12 +56,10 @@ const routeTree = rootRoute.addChildren([
   manageTabsRoute,
 ]);
 
-// Create a memory history instance for Chrome extension environment
 const memoryHistory = createMemoryHistory({
-  initialEntries: ['/'], // Start at the main view
+  initialEntries: ['/'],
 });
 
-// Create the router using the route tree and memory history
 const router = createRouter({
   routeTree,
   history: memoryHistory,
@@ -72,14 +67,12 @@ const router = createRouter({
   defaultViewTransition: true,
 });
 
-// Register things for typesafety
 declare module '@tanstack/react-router' {
   interface Register {
     router: typeof router;
   }
 }
 
-// Create and export the router provider component
 export default function Router() {
   return <RouterProvider router={router} />;
 }

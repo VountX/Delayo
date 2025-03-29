@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from '@tanstack/react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Link } from '@tanstack/react-router';
 import { DelayedTab } from '@types';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import useTheme from '../../utils/useTheme';
@@ -125,26 +125,19 @@ function ManageTabsView(): React.ReactElement {
   };
 
   const formatDate = (timestamp: number): string => {
-    // Obter o idioma atual do i18n
     const locale = document.documentElement.lang || navigator.language || 'pt-BR';
     
-    // Configurar formatação de acordo com o idioma
     const isEnglish = locale.startsWith('en');
-    // As variáveis isSpanish e isPortuguese foram removidas pois não são utilizadas
     
-    // Criar objeto de data
     const date = new Date(timestamp);
     
-    // Formatar a data de acordo com o idioma
     return date.toLocaleString(locale, {
       year: 'numeric',
-      month: 'long', // Mês por extenso (será traduzido automaticamente)
+      month: 'long',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-      hour12: isEnglish, // Usar AM/PM apenas para inglês
-      // A ordem de data (dia/mês/ano ou mês/dia/ano) é automática com toLocaleString
-      // Ordem de data para inglês (mês/dia/ano) é automática com toLocaleString
+      hour12: isEnglish,
     });
   };
 
@@ -219,13 +212,13 @@ function ManageTabsView(): React.ReactElement {
                   className={`btn btn-sm ${selectMode ? 'btn-outline' : ''}`}
                   style={!selectMode ? { backgroundColor: '#ffb26f', color: '#3B1B00' } : {}}
                   onClick={toggleSelectMode}
-                  title={selectMode ? 'Cancelar seleção' : 'Ativar modo de seleção múltipla'}
+                  title={selectMode ? t('manageTabs.cancelSelection') : t('manageTabs.selectMode')}
                 >
                   <FontAwesomeIcon 
                     icon={selectMode ? 'times' : 'check-square'} 
                     className='mr-2'
                   />
-                  {selectMode ? 'Cancelar' : 'Selecionar'}
+                  {selectMode ? t('manageTabs.cancel') : t('manageTabs.select')}
                 </button>
                 {selectMode && (
                   <button
@@ -233,7 +226,7 @@ function ManageTabsView(): React.ReactElement {
                     className='btn btn-sm btn-ghost ml-2'
                     onClick={toggleSelectAll}
                   >
-                    {selectedTabs.length === delayedTabs.length ? 'Desmarcar Todos' : 'Selecionar Todos'}
+                    {selectedTabs.length === delayedTabs.length ? t('manageTabs.deselectAll') : t('manageTabs.selectAll')}
                   </button>
                 )}
               </div>
@@ -245,14 +238,14 @@ function ManageTabsView(): React.ReactElement {
                     style={{ backgroundColor: '#ffb26f', color: '#3B1B00' }}
                     onClick={wakeSelectedTabs}
                   >
-                    Acordar ({selectedTabs.length})
+                    {t('manageTabs.wakeUp')} ({selectedTabs.length})
                   </button>
                   <button
                     type='button'
                     className='btn btn-outline btn-error btn-sm'
                     onClick={removeSelectedTabs}
                   >
-                    Remover ({selectedTabs.length})
+                    {t('manageTabs.remove')} ({selectedTabs.length})
                   </button>
                 </div>
               )}
@@ -288,7 +281,7 @@ function ManageTabsView(): React.ReactElement {
                     )}
                     <div className='mr-4 max-w-[200px]'>
                       <div className='truncate text-sm font-medium text-base-content/80'>
-                        {tab.title || 'Aba sem título'}
+                        {tab.title || t('manageTabs.untitledTab')}
                       </div>
                       <div className='truncate text-xs text-base-content/60'>
                         {formatDate(tab.wakeTime)} ({calculateTimeLeft(tab.wakeTime)})
@@ -303,14 +296,14 @@ function ManageTabsView(): React.ReactElement {
                         style={{ backgroundColor: '#ffb26f', color: '#3B1B00' }}
                         onClick={() => wakeTabNow(tab)}
                       >
-                        Acordar
+                        {t('manageTabs.wakeUp')}
                       </button>
                       <button
                         type='button'
                         className='btn btn-outline btn-error btn-sm'
                         onClick={() => removeTab(tab)}
                       >
-                        Remover
+                        {t('manageTabs.remove')}
                       </button>
                     </div>
                   )}

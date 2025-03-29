@@ -9,10 +9,10 @@ export interface DelayOption {
 
 export interface RecurrencePattern {
   type: 'daily' | 'weekdays' | 'weekly' | 'monthly' | 'custom';
-  daysOfWeek?: number[]; // 0 = Sunday, 1 = Monday, etc.
-  dayOfMonth?: number; // 1-31
-  time: string; // HH:MM format
-  endDate?: number; // Optional timestamp when recurrence ends
+  daysOfWeek?: number[];
+  dayOfMonth?: number;
+  time: string;
+  endDate?: number;
 }
 
 export interface DelayedTab {

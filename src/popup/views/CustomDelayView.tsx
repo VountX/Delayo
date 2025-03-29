@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from '@tanstack/react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Link } from '@tanstack/react-router';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 function CustomDelayView(): React.ReactElement {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<chrome.tabs.Tab | null>(null);
   const [highlightedTabs, setHighlightedTabs] = useState<chrome.tabs.Tab[]>([]);
   const [allWindowTabs, setAllWindowTabs] = useState<chrome.tabs.Tab[]>([]);
@@ -16,21 +18,18 @@ function CustomDelayView(): React.ReactElement {
     const getTabs = async (): Promise<void> => {
       try {
         if (typeof chrome !== 'undefined' && chrome.tabs && chrome.tabs.query) {
-          // Obter a aba ativa
           const [tab] = await chrome.tabs.query({
             active: true,
             currentWindow: true,
           });
           setActiveTab(tab);
           
-          // Obter abas destacadas (selecionadas pelo usuário)
           const highlighted = await chrome.tabs.query({
             highlighted: true,
             currentWindow: true,
           });
           setHighlightedTabs(highlighted);
           
-          // Obter o modo de seleção da tela principal
           const { selectedMode: mainViewMode } = await chrome.storage.local.get('selectedMode');
           if (mainViewMode) {
             setSelectedMode(mainViewMode);
@@ -39,14 +38,13 @@ function CustomDelayView(): React.ReactElement {
           } else {
             setSelectedMode('active');
           }
-          
-          // Obter todas as abas da janela atual
+
           const allTabs = await chrome.tabs.query({
             currentWindow: true,
           });
           setAllWindowTabs(allTabs);
         } else {
-          // Modo de desenvolvimento
+          //dev
           const mockTab = {
             id: 123,
             url: 'https://example.com',
@@ -68,7 +66,6 @@ function CustomDelayView(): React.ReactElement {
     getTabs();
   }, []);
 
-  // Função para obter as abas a serem adiadas com base no modo selecionado
   const getTabsToDelay = (): chrome.tabs.Tab[] => {
     switch (selectedMode) {
       case 'active':
@@ -88,7 +85,6 @@ function CustomDelayView(): React.ReactElement {
 
     const wakeTime = new Date(customDate).getTime();
 
-    // Save delayed tab info to storage
     if (
       typeof chrome !== 'undefined' &&
       chrome.storage &&
@@ -110,17 +106,14 @@ function CustomDelayView(): React.ReactElement {
             wakeTime,
           };
 
-          // Adicionar à lista de abas adiadas
           delayedTabs.push(tabInfo);
           
-          // Criar alarme para esta aba
           if (chrome.alarms) {
             await chrome.alarms.create(`delayed-tab-${tabInfo.id}`, {
               when: wakeTime,
             });
           }
           
-          // Adicionar ID da aba à lista para fechar
           tabIds.push(tab.id);
         }
 
@@ -154,18 +147,18 @@ function CustomDelayView(): React.ReactElement {
           <Link
             to='/'
             className='btn btn-circle btn-ghost btn-sm mr-3 transition-all duration-200 hover:bg-base-100'
-            aria-label='Voltar ao menu principal'
+            aria-label={t('common.back')}
             viewTransition={{ types: ['slide-right'] }}
           >
             <FontAwesomeIcon icon='arrow-left' />
           </Link>
           <h2 className='card-title font-bold text-delayo-orange'>
-            Escolher Data/Hora
+            {t('customDelay.title')}
           </h2>
         </div>
 
         <div className='mb-5'>
-          <div className='text-sm font-medium text-base-content/80 mb-2'>Adiando:</div>
+          <div className='text-sm font-medium text-base-content/80 mb-2'>{t('popup.delay')}:</div>
           <div className='rounded-lg bg-base-100/70 p-4 shadow-sm transition-all duration-200 hover:bg-base-100'>
             {selectedMode === 'active' && activeTab && (
               <div className='flex items-center'>
@@ -192,13 +185,13 @@ function CustomDelayView(): React.ReactElement {
             
             {selectedMode === 'highlighted' && (
               <div className='text-sm font-medium text-base-content/80'>
-                {highlightedTabs.length} {highlightedTabs.length === 1 ? 'aba selecionada' : 'abas selecionadas'}
+                {highlightedTabs.length} {highlightedTabs.length === 1 ? t('common.tabs.singular') : t('common.tabs')} {t('popup.selected')}
               </div>
             )}
             
             {selectedMode === 'window' && (
               <div className='text-sm font-medium text-base-content/80'>
-                {allWindowTabs.length} {allWindowTabs.length === 1 ? 'aba na janela' : 'abas na janela'}
+                {allWindowTabs.length} {allWindowTabs.length === 1 ? t('common.tabs.singular') : t('common.tabs')} {t('popup.inWindow')}
               </div>
             )}
           </div>
@@ -207,7 +200,7 @@ function CustomDelayView(): React.ReactElement {
         <div className='form-control'>
           <label className='label'>
             <span className='label-text font-medium'>
-              Escolha a data e hora
+              {t('customDelay.selectDateTime')}
             </span>
           </label>
           <input
@@ -225,7 +218,7 @@ function CustomDelayView(): React.ReactElement {
             onClick={handleDelay}
             disabled={!activeTab || !customDate}
           >
-            Adiar Aba
+            {t('customDelay.delayTab')}
           </button>
         </div>
       </div>

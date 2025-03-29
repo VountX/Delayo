@@ -26,7 +26,7 @@
       "window": "Janela Atual"
     },
     "delayOptions": {
-      "laterToday": "Mais Tarde Hoje (em {{hours}} horas)",
+      "laterToday": "Hoje Mais Tarde (em {{hours}} horas)",
       "tonight": "Esta Noite (às {{time}})",
       "tomorrow": "Amanhã (às {{time}})",
       "weekend": "Este Fim de Semana ({{day}}, {{time}})",
@@ -59,6 +59,7 @@
     "title": "Adiamento Recorrente",
     "frequency": "Frequência",
     "daily": "Diário",
+    "weekdays": "Nos dias úteis",
     "weekly": "Semanal",
     "monthly": "Mensal",
     "selectTime": "Selecione o Horário",
@@ -74,7 +75,7 @@
     "notifications": "Notificações",
     "enableNotifications": "Ativar Notificações",
     "defaultDelayOptions": "Opções de Adiamento Padrão",
-    "laterToday": "Mais Tarde Hoje",
+    "laterToday": "Hoje Mais Tarde",
     "hours": "horas",
     "tonight": "Esta Noite",
     "tomorrow": "Amanhã",
@@ -98,10 +99,47 @@
     "timeLeft": "Tempo restante",
     "delayedUntil": "Adiada até",
     "now": "Agora",
+    "select": "Selecionar",
+    "cancel": "Cancelar",
+    "selectAll": "Selecionar Todos",
+    "deselectAll": "Desmarcar Todos",
+    "selectMode": "Ativar modo de seleção múltipla",
+    "cancelSelection": "Cancelar seleção",
+    "wakeUp": "Acordar",
+    "remove": "Remover",
+    "untitledTab": "Aba sem título",
     "actions": {
       "wakeNow": "Despertar Agora",
       "delete": "Excluir",
       "edit": "Editar"
     }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Bem-vindo ao Delayo",
+      "description": "Delayo é uma extensão que permite adiar abas para visualizá-las mais tarde, ajudando você a manter seu navegador organizado."
+    },
+    "delayOptions": {
+      "title": "Opções de Adiamento",
+      "description": "Escolha entre várias opções predefinidas para adiar suas abas para um momento mais conveniente."
+    },
+    "customDelay": {
+      "title": "Adiamento Personalizado",
+      "description": "Defina uma data e hora específicas para quando deseja que a aba reapareça."
+    },
+    "recurring": {
+      "title": "Adiamento Recorrente",
+      "description": "Configure abas para reaparecerem em um cronograma regular: diariamente, semanalmente ou mensalmente."
+    },
+    "settings": {
+      "title": "Configurações e Gerenciamento",
+      "description": "Personalize a extensão e gerencie suas abas adiadas facilmente.",
+      "gearClick": "Clique na engrenagem ⚙️",
+      "rightClick": "Clique com o botão direito no ícone da extensão e selecione 'Opções' para acessar as configurações."
+    },
+    "next": "Próximo",
+    "back": "Voltar",
+    "finish": "Concluir",
+    "close": "Fechar"
   }
 }

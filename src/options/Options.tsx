@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
 import { DelayedTab } from '@types';
-import { useTranslation } from 'react-i18next';
 import useTheme from '@utils/useTheme';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import LanguageSelector from '../components/LanguageSelector';
 
 import DelaySettingsComponent from './DelaySettings';
@@ -63,25 +63,19 @@ function Options(): React.ReactElement {
   };
 
   const formatDate = (timestamp: number): string => {
-    // Obter o idioma atual do i18n
     const locale = document.documentElement.lang || navigator.language || 'pt-BR';
     
-    // Configurar formatação de acordo com o idioma
     const isEnglish = locale.startsWith('en');
-    // As variáveis isSpanish e isPortuguese foram removidas pois não são utilizadas
     
-    // Criar objeto de data
     const date = new Date(timestamp);
     
-    // Formatar a data de acordo com o idioma
     return date.toLocaleString(locale, {
       year: 'numeric',
-      month: 'long', // Mês por extenso (será traduzido automaticamente)
+      month: 'long',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-      hour12: isEnglish, // Usar AM/PM apenas para inglês
-      // A ordem de data (dia/mês/ano ou mês/dia/ano) é automática com toLocaleString
+      hour12: isEnglish,
     });
   };
 

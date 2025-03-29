@@ -1,9 +1,9 @@
-import React, { useEffect, useId, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from '@tanstack/react-router';
 import { DelayedTab, RecurrencePattern } from '@types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useEffect, useId, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-// Accessible Form Control component using function declaration with destructured props
 function FormControl({
   label,
   children,
@@ -20,7 +20,7 @@ function FormControl({
 }
 
 function RecurringDelayView(): React.ReactElement {
-  // Generate unique IDs for form elements
+  const { t } = useTranslation();
   const patternId = useId();
   const timeId = useId();
   const daysOfWeekId = useId();
@@ -53,21 +53,18 @@ function RecurringDelayView(): React.ReactElement {
     const getTabs = async (): Promise<void> => {
       try {
         if (typeof chrome !== 'undefined' && chrome.tabs && chrome.tabs.query) {
-          // Obter a aba ativa
           const [tab] = await chrome.tabs.query({
             active: true,
             currentWindow: true,
           });
           setActiveTab(tab);
           
-          // Obter abas destacadas (selecionadas pelo usuário)
           const highlighted = await chrome.tabs.query({
             highlighted: true,
             currentWindow: true,
           });
           setHighlightedTabs(highlighted);
           
-          // Obter o modo de seleção da tela principal
           const { selectedMode: mainViewMode } = await chrome.storage.local.get('selectedMode');
           if (mainViewMode) {
             setSelectedMode(mainViewMode);
@@ -77,13 +74,11 @@ function RecurringDelayView(): React.ReactElement {
             setSelectedMode('active');
           }
           
-          // Obter todas as abas da janela atual
           const allTabs = await chrome.tabs.query({
             currentWindow: true,
           });
           setAllWindowTabs(allTabs);
         } else {
-          // Modo de desenvolvimento
           const mockTab = {
             id: 123,
             url: 'https://example.com',
@@ -106,7 +101,6 @@ function RecurringDelayView(): React.ReactElement {
   }, []);
 
   useEffect(() => {
-    // Update selected days when recurrence type changes
     if (recurrenceType === 'daily') {
       setSelectedDays([0, 1, 2, 3, 4, 5, 6]);
     } else if (recurrenceType === 'weekdays') {
@@ -124,7 +118,6 @@ function RecurringDelayView(): React.ReactElement {
     }
   };
 
-  // Função para obter as abas a serem adiadas com base no modo selecionado
   const getTabsToDelay = (): chrome.tabs.Tab[] => {
     switch (selectedMode) {
       case 'active':
@@ -142,32 +135,26 @@ function RecurringDelayView(): React.ReactElement {
     const tabsToDelay = getTabsToDelay();
     if (tabsToDelay.length === 0) return;
 
-    // Calculate the first wake time
     const now = new Date();
     const [hours, minutes] = time.split(':').map(Number);
     const firstWakeTime = new Date();
     firstWakeTime.setHours(hours, minutes, 0, 0);
 
-    // If the time is already past today, set to tomorrow
     if (firstWakeTime.getTime() < now.getTime()) {
       firstWakeTime.setDate(firstWakeTime.getDate() + 1);
     }
 
-    // For monthly, set to the correct day of month
     if (recurrenceType === 'monthly') {
       firstWakeTime.setDate(dayOfMonth);
-      // If the day has already passed this month, set to next month
       if (firstWakeTime.getTime() < now.getTime()) {
         firstWakeTime.setMonth(firstWakeTime.getMonth() + 1);
       }
     }
 
-    // For weekly or custom days, adjust to the next occurrence of one of the selected days
     if (recurrenceType === 'weekly' || recurrenceType === 'custom') {
       const currentDay = now.getDay();
-      let daysUntilNext = 7; // Default to a week if no days are selected
+      let daysUntilNext = 7;
 
-      // Find the next day that is selected
       for (let i = 1; i <= 7; i++) {
         const checkDay = (currentDay + i) % 7;
         if (selectedDays.includes(checkDay)) {
@@ -179,7 +166,6 @@ function RecurringDelayView(): React.ReactElement {
       firstWakeTime.setDate(now.getDate() + daysUntilNext);
     }
 
-    // Create the recurrence pattern
     const recurrencePattern: RecurrencePattern = {
       type: recurrenceType,
       time,
@@ -193,16 +179,13 @@ function RecurringDelayView(): React.ReactElement {
       chrome.storage &&
       chrome.storage.local
     ) {
-      // Save to storage
       chrome.storage.local.get({ delayedTabs: [] }, async (data) => {
         const { delayedTabs } = data;
         const tabIds: number[] = [];
         
-        // Processar cada aba a ser adiada
         for (const tab of tabsToDelay) {
           if (!tab.id) continue;
           
-          // Create the delayed tab info
           const tabInfo: DelayedTab = {
             id: tab.id,
             url: tab.url,
@@ -213,17 +196,14 @@ function RecurringDelayView(): React.ReactElement {
             recurrencePattern,
           };
           
-          // Adicionar à lista de abas adiadas
           delayedTabs.push(tabInfo);
           
-          // Create alarm for this tab
           if (chrome.alarms) {
             await chrome.alarms.create(`delayed-tab-${tabInfo.id}`, {
               when: firstWakeTime.getTime(),
             });
           }
           
-          // Adicionar ID da aba à lista para fechar
           tabIds.push(tab.id);
         }
 
@@ -257,18 +237,18 @@ function RecurringDelayView(): React.ReactElement {
           <Link
             to='/'
             className='btn btn-circle btn-ghost btn-sm mr-3 transition-all duration-200 hover:bg-base-100'
-            aria-label='Voltar ao menu principal'
+            aria-label={t('common.back')}
             viewTransition={{ types: ['slide-right'] }}
           >
             <FontAwesomeIcon icon='arrow-left' />
           </Link>
           <h2 className='card-title font-bold text-delayo-orange'>
-            Adiamento Recorrente
+            {t('recurringDelay.title')}
           </h2>
         </div>
 
         <div className='mb-4'>
-          <div className='text-sm font-medium text-base-content/80 mb-2'>Adiando:</div>
+          <div className='text-sm font-medium text-base-content/80 mb-2'>{t('popup.delay')}:</div>
           <div className='rounded-lg bg-base-100/70 p-4 shadow-sm transition-all duration-200 hover:bg-base-100'>
             {selectedMode === 'active' && activeTab && (
               <div className='flex items-center'>
@@ -295,19 +275,19 @@ function RecurringDelayView(): React.ReactElement {
             
             {selectedMode === 'highlighted' && (
               <div className='text-sm font-medium text-base-content/80'>
-                {highlightedTabs.length} {highlightedTabs.length === 1 ? 'aba selecionada' : 'abas selecionadas'}
+                {highlightedTabs.length} {highlightedTabs.length === 1 ? t('common.tabs.singular') : t('common.tabs')} {t('popup.selected')}
               </div>
             )}
             
             {selectedMode === 'window' && (
               <div className='text-sm font-medium text-base-content/80'>
-                {allWindowTabs.length} {allWindowTabs.length === 1 ? 'aba na janela' : 'abas na janela'}
+                {allWindowTabs.length} {allWindowTabs.length === 1 ? t('common.tabs.singular') : t('common.tabs')} {t('popup.inWindow')}
               </div>
             )}
           </div>
         </div>
 
-        <FormControl label='Padrão de Recorrência'>
+        <FormControl label={t('recurringDelay.frequency')}>
           <select
             id={patternId}
             className='select select-bordered w-full border-none bg-base-100/50 shadow-sm transition-all duration-200 focus:bg-base-100/80'
@@ -316,15 +296,15 @@ function RecurringDelayView(): React.ReactElement {
               setRecurrenceType(e.target.value as RecurrencePattern['type'])
             }
           >
-            <option value='daily'>Diariamente</option>
-            <option value='weekdays'>Dias de Semana (Seg-Sex)</option>
-            <option value='weekly'>Semanalmente</option>
-            <option value='monthly'>Mensalmente</option>
-            <option value='custom'>Dias Personalizados</option>
+            <option value='daily'>{t('recurringDelay.daily')}</option>
+            <option value='weekdays'>{t('recurringDelay.weekdays')}</option>
+            <option value='weekly'>{t('recurringDelay.weekly')}</option>
+            <option value='monthly'>{t('recurringDelay.monthly')}</option>
+            <option value='custom'>{t('customDelay.title')}</option>
           </select>
         </FormControl>
 
-        <FormControl label='Horário'>
+        <FormControl label={t('recurringDelay.selectTime')}>
           <input
             id={timeId}
             type='time'
@@ -335,7 +315,7 @@ function RecurringDelayView(): React.ReactElement {
         </FormControl>
 
         {(recurrenceType === 'weekly' || recurrenceType === 'custom') && (
-          <FormControl label='Dias da Semana'>
+          <FormControl label={t('recurringDelay.selectDay')}>
             <div
               id={daysOfWeekId}
               className='mt-1 flex flex-wrap justify-between gap-1'
@@ -357,7 +337,7 @@ function RecurringDelayView(): React.ReactElement {
         )}
 
         {recurrenceType === 'monthly' && (
-          <FormControl label='Dia do Mês'>
+          <FormControl label={t('recurringDelay.selectDay')}>
             <input
               id={dayOfMonthId}
               type='number'
@@ -374,7 +354,7 @@ function RecurringDelayView(): React.ReactElement {
           </FormControl>
         )}
 
-        <FormControl label='Data de Término (opcional)'>
+        <FormControl label={t('manageTabs.endDate')}>
           <input
             id={endDateId}
             type='date'
@@ -394,7 +374,7 @@ function RecurringDelayView(): React.ReactElement {
               (recurrenceType === 'custom' && selectedDays.length === 0)
             }
           >
-            Adiar Aba
+            {t('recurringDelay.delayTab')}
           </button>
         </div>
       </div>

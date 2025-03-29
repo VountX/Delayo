@@ -59,6 +59,7 @@
     "title": "Recurring Schedule",
     "frequency": "Frequency",
     "daily": "Daily",
+    "weekdays": "On Weekdays",
     "weekly": "Weekly",
     "monthly": "Monthly",
     "selectTime": "Select Time",
@@ -98,10 +99,47 @@
     "timeLeft": "Time left",
     "delayedUntil": "Delayed until",
     "now": "Now",
+    "select": "Select",
+    "cancel": "Cancel",
+    "selectAll": "Select All",
+    "deselectAll": "Deselect All",
+    "selectMode": "Enable multiple selection mode",
+    "cancelSelection": "Cancel selection",
+    "wakeUp": "Wake Up",
+    "remove": "Remove",
+    "untitledTab": "Untitled tab",
     "actions": {
       "wakeNow": "Wake Now",
       "delete": "Delete",
       "edit": "Edit"
     }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Welcome to Delayo",
+      "description": "Delayo is an extension that lets you delay tabs to view them later, helping you keep your browser organized."
+    },
+    "delayOptions": {
+      "title": "Delay Options",
+      "description": "Choose from various preset options to delay your tabs to a more convenient time."
+    },
+    "customDelay": {
+      "title": "Custom Delay",
+      "description": "Set a specific date and time for when you want the tab to reappear."
+    },
+    "recurring": {
+      "title": "Recurring Delay",
+      "description": "Set up tabs to reappear on a regular schedule: daily, weekly, or monthly."
+    },
+    "settings": {
+      "title": "Settings & Management",
+      "description": "Customize the extension and manage your delayed tabs easily.",
+      "gearClick": "Click on the gear icon ⚙️",
+      "rightClick": "Right-click on the extension icon and select 'Options' to access settings."
+    },
+    "next": "Next",
+    "back": "Back",
+    "finish": "Finish",
+    "close": "Close"
   }
 }

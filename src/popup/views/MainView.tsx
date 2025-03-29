@@ -1,25 +1,25 @@
 // filepath: /home/burkhard/Code/delayo/src/popup/views/MainView.tsx
-import React, { useEffect, useState } from 'react';
 import { faHourglassHalf } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from '@tanstack/react-router';
 import { DelayOption } from '@types';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import useTheme from '../../utils/useTheme';
 
 interface DelaySettings {
-  laterToday: number; // horas
-  tonightTime: string; // formato HH:MM
-  tomorrowTime: string; // formato HH:MM
+  laterToday: number; // hours
+  tonightTime: string; // format HH:MM
+  tomorrowTime: string; // format HH:MM
   weekendDay: 'saturday' | 'sunday';
-  weekendTime: string; // formato HH:MM
-  nextWeekSameDay: boolean; // se true, mesmo dia da semana; se false, dia específico
-  nextWeekDay: number; // 0-6 (0 = domingo, 1 = segunda, etc.)
-  nextWeekTime: string; // formato HH:MM
-  nextMonthSameDay: boolean; // se true, mesmo dia do mês; se false, mesmo dia da semana
-  somedayMinMonths: number; // mínimo de meses para "Um Dia"
-  somedayMaxMonths: number; // máximo de meses para "Um Dia"
+  weekendTime: string; // format HH:MM
+  nextWeekSameDay: boolean; // if true, same week day; if false, specific day
+  nextWeekDay: number; // 0-6 (0 = Sunday, 1 = Monday, ...)
+  nextWeekTime: string; // format HH:MM
+  nextMonthSameDay: boolean; // if true, same month day; if false, same week day near the same day
+  somedayMinMonths: number; // min of months for "Someday"
+  somedayMaxMonths: number; // max of months for "Someday"
 }
 
 function MainView(): React.ReactElement {
@@ -30,17 +30,17 @@ function MainView(): React.ReactElement {
   const [selectedMode, setSelectedMode] = useState<'active' | 'highlighted' | 'window'>('active');
   const [loading, setLoading] = useState(true);
   const [settings, setSettings] = useState<DelaySettings>({
-    laterToday: 3, // 3 horas mais tarde
-    tonightTime: '18:00', // 18h
-    tomorrowTime: '09:00', // 9h
+    laterToday: 3, // 3 hours later
+    tonightTime: '18:00',
+    tomorrowTime: '09:00',
     weekendDay: 'saturday',
-    weekendTime: '09:00', // 9h
-    nextWeekDay: 1, // Segunda-feira
-    nextWeekTime: '09:00', // 9h
+    weekendTime: '09:00',
+    nextWeekDay: 1, // Monday
+    nextWeekTime: '09:00',
     nextMonthSameDay: true,
     nextWeekSameDay: true,
-    somedayMinMonths: 3, // mínimo 3 meses
-    somedayMaxMonths: 12, // máximo 12 meses
+    somedayMinMonths: 3, // default min of 3 months for "Someday"
+    somedayMaxMonths: 12, // default - max of 12 months for "Someday"
   });
   const { theme, toggleTheme } = useTheme();
 
@@ -48,34 +48,34 @@ function MainView(): React.ReactElement {
     const getTabs = async (): Promise<void> => {
       try {
         if (typeof chrome !== 'undefined' && chrome.tabs) {
-          // Obter a aba ativa
+          // Actual tab
           const [tab] = await chrome.tabs.query({
             active: true,
             currentWindow: true,
           });
           setActiveTab(tab);
           
-          // Obter abas destacadas (selecionadas pelo usuário)
+          // Selected by user
           const highlighted = await chrome.tabs.query({
             highlighted: true,
             currentWindow: true,
           });
           setHighlightedTabs(highlighted);
           
-          // Definir o modo de seleção com base nas abas destacadas
+          // Intelligence to decide method based on number of tabs selected
           if (highlighted.length > 1) {
             setSelectedMode('highlighted');
           } else {
             setSelectedMode('active');
           }
           
-          // Obter todas as abas da janela atual
+          // For window - all tabs
           const allTabs = await chrome.tabs.query({
             currentWindow: true,
           });
           setAllWindowTabs(allTabs);
         } else {
-          // Modo de desenvolvimento
+          // dev
           const mockTab = {
             id: 123,
             url: 'https://example.com',
@@ -97,7 +97,7 @@ function MainView(): React.ReactElement {
     getTabs();
   }, []);
 
-  // Carrega as configurações salvas
+  // load settings
   useEffect(() => {
     const loadSettings = async (): Promise<void> => {
       try {
@@ -137,7 +137,6 @@ function MainView(): React.ReactElement {
         const { hours, minutes } = getTimeFromString(settings.tonightTime);
         const today = new Date();
         today.setHours(hours, minutes, 0, 0);
-        // Se já passou do horário configurado, retorna o horário atual + 1 hora
         if (today.getTime() < Date.now()) {
           return Date.now() + 60 * 60 * 1000;
         }
@@ -166,19 +165,15 @@ function MainView(): React.ReactElement {
       calculateTime: () => {
         const { hours, minutes } = getTimeFromString(settings.weekendTime);
         const today = new Date();
-        const currentDay = today.getDay(); // 0 é Domingo, 6 é Sábado
+        const currentDay = today.getDay();
         const targetDay = settings.weekendDay === 'saturday' ? 6 : 0;
 
-        // Calcula quantos dias faltam até o dia alvo
         let daysUntilTarget;
         if (currentDay === targetDay) {
-          // Se hoje já é o dia alvo, vai para o próximo
           daysUntilTarget = 7;
         } else if (currentDay < targetDay) {
-          // Se o dia alvo ainda não chegou esta semana
           daysUntilTarget = targetDay - currentDay;
         } else {
-          // Se o dia alvo já passou esta semana
           daysUntilTarget = 7 - (currentDay - targetDay);
         }
 
@@ -192,52 +187,39 @@ function MainView(): React.ReactElement {
       id: 'next_week',
       label: (() => {
         if (settings.nextWeekSameDay) {
-          // Mesmo dia da semana
           const today = new Date();
           const dayName = t(`popup.weekdays.${['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][today.getDay()]}`);
-          // Não mostrar mais o horário na label
           return t('popup.delayOptions.nextWeek', { day: dayName, time: '' }).replace(', ', '');
         } else {
-          // Dia específico
           const dayName = t(`popup.weekdays.${['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][settings.nextWeekDay]}`);
-          // Não mostrar mais o horário na label
           return t('popup.delayOptions.nextWeek', { day: dayName, time: '' }).replace(', ', '');
         }
       })(),
       custom: true,
       calculateTime: () => {
         const today = new Date();
-        // Usar o horário atual em vez do horário configurado
         const hours = today.getHours();
         const minutes = today.getMinutes();
         let targetDay;
         
         if (settings.nextWeekSameDay) {
-          // Usar o mesmo dia da semana
           targetDay = today.getDay();
         } else {
-          // Usar o dia específico configurado
           targetDay = settings.nextWeekDay;
         }
         
         const currentDay = today.getDay();
-
-        // Calcula quantos dias faltam até o dia alvo na próxima semana
         let daysUntilTarget;
         if (currentDay === targetDay) {
-          // Se hoje já é o dia alvo, vai para o próximo na semana que vem
           daysUntilTarget = 7;
         } else if (currentDay < targetDay) {
-          // Se o dia alvo ainda não chegou esta semana, vai para a próxima semana
           daysUntilTarget = targetDay - currentDay + 7;
         } else {
-          // Se o dia alvo já passou esta semana, vai para a próxima semana
           daysUntilTarget = 7 - (currentDay - targetDay) + 7;
         }
 
         const targetDate = new Date();
         targetDate.setDate(today.getDate() + daysUntilTarget);
-        // Usar o horário atual (hora em que foi adiada)
         targetDate.setHours(hours, minutes, 0, 0);
         return targetDate.getTime();
       },
@@ -250,9 +232,7 @@ function MainView(): React.ReactElement {
         let formattedDate = '';
         
         if (settings.nextMonthSameDay) {
-          // Mesmo dia do mês seguinte
           targetDate.setMonth(today.getMonth() + 1);
-          // Verifica se o dia existe no próximo mês
           const lastDayOfNextMonth = new Date(
             today.getFullYear(),
             today.getMonth() + 2,
@@ -261,34 +241,24 @@ function MainView(): React.ReactElement {
           if (today.getDate() > lastDayOfNextMonth) {
             targetDate.setDate(lastDayOfNextMonth);
           }
-          // Ajuste para formatar o mês no idioma correto
-          // Usa o idioma configurado no i18n em vez de document.documentElement.lang
           const { i18n } = useTranslation();
           const locale = i18n.language || navigator.language || 'pt-BR';
           formattedDate = targetDate.toLocaleDateString(locale, { day: 'numeric', month: 'long' });
         } else {
-          // Mesmo dia da semana no próximo mês
           const currentDay = today.getDay();
           const currentWeekOfMonth = Math.ceil(today.getDate() / 7);
-
-          // Avança para o próximo mês
           targetDate.setMonth(today.getMonth() + 1);
-          // Define o dia 1 do próximo mês
           targetDate.setDate(1);
 
-          // Encontra o primeiro dia da semana correspondente no próximo mês
           while (targetDate.getDay() !== currentDay) {
             targetDate.setDate(targetDate.getDate() + 1);
           }
 
-          // Avança para a semana correspondente
           targetDate.setDate(
             targetDate.getDate() + (currentWeekOfMonth - 1) * 7
           );
 
-          // Verifica se ainda estamos no mesmo mês
           if (targetDate.getMonth() !== (today.getMonth() + 1) % 12) {
-            // Se passou para o mês seguinte, volta para a última ocorrência do dia da semana no mês desejado
             targetDate.setDate(1);
             targetDate.setMonth((today.getMonth() + 1) % 12);
 
@@ -308,29 +278,22 @@ function MainView(): React.ReactElement {
 
             targetDate.setDate(lastOccurrence);
           }
-          
-          // Ajuste para formatar o mês no idioma correto
-          // Usa o idioma configurado no i18n em vez de document.documentElement.lang
+
           const { i18n } = useTranslation();
           const locale = i18n.language || navigator.language || 'pt-BR';
           formattedDate = targetDate.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' });
         }
         
-        // Mantém a mesma hora do dia, formatando de acordo com o idioma
-        // Usa o idioma configurado no i18n em vez de document.documentElement.lang
         const { i18n } = useTranslation();
         const locale = i18n.language || navigator.language || 'pt-BR';
         let timeStr;
         
-        // Formata a hora de acordo com o idioma
         if (locale.startsWith('en')) {
-          // Formato 12h AM/PM para inglês
           const hours = today.getHours();
           const ampm = hours >= 12 ? 'PM' : 'AM';
-          const hours12 = hours % 12 || 12; // Converte 0 para 12
+          const hours12 = hours % 12 || 12;
           timeStr = `${hours12}:${today.getMinutes().toString().padStart(2, '0')} ${ampm}`;
         } else {
-          // Formato 24h para português e espanhol
           timeStr = `${today.getHours().toString().padStart(2, '0')}:${today.getMinutes().toString().padStart(2, '0')}`;
         }
         return `${t('popup.delayOptions.nextMonth')} (${formattedDate}, ${timeStr})`;
@@ -341,9 +304,7 @@ function MainView(): React.ReactElement {
         const targetDate = new Date();
 
         if (settings.nextMonthSameDay) {
-          // Mesmo dia do mês seguinte
           targetDate.setMonth(today.getMonth() + 1);
-          // Verifica se o dia existe no próximo mês (ex: 31 de janeiro -> 28/29 de fevereiro)
           const lastDayOfNextMonth = new Date(
             today.getFullYear(),
             today.getMonth() + 2,
@@ -353,28 +314,20 @@ function MainView(): React.ReactElement {
             targetDate.setDate(lastDayOfNextMonth);
           }
         } else {
-          // Mesmo dia da semana no próximo mês
           const currentDay = today.getDay();
           const currentWeekOfMonth = Math.ceil(today.getDate() / 7);
-
-          // Avança para o próximo mês
           targetDate.setMonth(today.getMonth() + 1);
-          // Define o dia 1 do próximo mês
           targetDate.setDate(1);
 
-          // Encontra o primeiro dia da semana correspondente no próximo mês
           while (targetDate.getDay() !== currentDay) {
             targetDate.setDate(targetDate.getDate() + 1);
           }
 
-          // Avança para a semana correspondente
           targetDate.setDate(
             targetDate.getDate() + (currentWeekOfMonth - 1) * 7
           );
 
-          // Verifica se ainda estamos no mesmo mês
           if (targetDate.getMonth() !== (today.getMonth() + 1) % 12) {
-            // Se passou para o mês seguinte, volta para a última ocorrência do dia da semana no mês desejado
             targetDate.setDate(1);
             targetDate.setMonth((today.getMonth() + 1) % 12);
 
@@ -395,8 +348,6 @@ function MainView(): React.ReactElement {
             targetDate.setDate(lastOccurrence);
           }
         }
-
-        // Mantém a mesma hora do dia em que a aba foi adiada
         targetDate.setHours(today.getHours(), today.getMinutes(), 0, 0);
         return targetDate.getTime();
       },
@@ -409,25 +360,19 @@ function MainView(): React.ReactElement {
         const today = new Date();
         const minMonths = settings.somedayMinMonths;
         const maxMonths = settings.somedayMaxMonths;
+        const randomMonths = Math.floor(Math.random() * (maxMonths - minMonths + 1)) + minMonths;
 
-        // Gera um número aleatório de meses entre min e max
-        const randomMonths =
-          Math.floor(Math.random() * (maxMonths - minMonths + 1)) + minMonths;
-
-        // Gera um número aleatório de dias entre 0 e 30
         const randomDays = Math.floor(Math.random() * 30);
 
         const targetDate = new Date();
         targetDate.setMonth(today.getMonth() + randomMonths);
         targetDate.setDate(today.getDate() + randomDays);
 
-        // Mantém a mesma hora do dia
         return targetDate.getTime();
       },
     },
   ];
 
-  // Função para obter as abas a serem adiadas com base no modo selecionado
   const getTabsToDelay = (): chrome.tabs.Tab[] => {
     switch (selectedMode) {
       case 'active':
@@ -459,12 +404,10 @@ function MainView(): React.ReactElement {
         (option.days ? option.days * 24 * 60 * 60 * 1000 : 0);
     }
 
-    // Obter as abas já adiadas
     await chrome.storage.local.get({ delayedTabs: [] }, async (data) => {
       const { delayedTabs } = data;
       const tabIds: number[] = [];
       
-      // Processar cada aba a ser adiada
       for (const tab of tabsToDelay) {
         if (!tab.id) continue;
         
@@ -477,27 +420,21 @@ function MainView(): React.ReactElement {
           wakeTime,
         };
 
-        // Adicionar à lista de abas adiadas
         delayedTabs.push(tabInfo);
         
-        // Criar alarme para esta aba
         await chrome.alarms.create(`delayed-tab-${tabInfo.id}`, {
           when: wakeTime,
         });
         
-        // Adicionar ID da aba à lista para fechar
         tabIds.push(tab.id);
       }
       
-      // Salvar informações das abas adiadas
       await chrome.storage.local.set({ delayedTabs });
 
-      // Fechar todas as abas
       if (tabIds.length > 0) {
         await chrome.tabs.remove(tabIds);
       }
 
-      // Fechar o popup
       window.close();
     });
   };
