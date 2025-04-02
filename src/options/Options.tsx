@@ -3,6 +3,7 @@ import useTheme from '@utils/useTheme';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import LanguageSelector from '../components/LanguageSelector';
+import '../i18n';
 
 import DelaySettingsComponent from './DelaySettings';
 import './options.css';
@@ -13,7 +14,7 @@ function Options(): React.ReactElement {
   const [activeTab, setActiveTab] = useState<'tabs' | 'settings'>('tabs');
   const [selectedTabs, setSelectedTabs] = useState<number[]>([]);
   const { theme, toggleTheme } = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const loadDelayedTabs = async (): Promise<void> => {
     try {
@@ -63,7 +64,7 @@ function Options(): React.ReactElement {
   };
 
   const formatDate = (timestamp: number): string => {
-    const locale = document.documentElement.lang || navigator.language || 'pt-BR';
+    const locale = i18n.language || navigator.language || 'pt-BR';
     
     const isEnglish = locale.startsWith('en');
     
@@ -160,7 +161,7 @@ function Options(): React.ReactElement {
                 <th className='w-1/4'>{t('common.tabs')}</th>
                 <th className='w-1/4'>{t('manageTabs.delayedUntil')}</th>
                 <th className='w-1/6'>{t('manageTabs.timeLeft')}</th>
-                <th className='w-1/3'>Ações</th>
+                <th className='w-1/3'>{t('manageTabs.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -208,14 +209,14 @@ function Options(): React.ReactElement {
                         style={{ backgroundColor: '#ffb26f', color: '#3B1B00' }}
                         onClick={() => wakeTabNow(tab)}
                       >
-                        Wake Now
+                        {t('manageTabs.wakeUp')}
                       </button>
                       <button
                         type='button'
                         className='btn btn-outline btn-error btn-sm'
                         onClick={() => removeTab(tab)}
                       >
-                        Delete
+                        {t('common.delete')}
                       </button>
                     </div>
                   </td>

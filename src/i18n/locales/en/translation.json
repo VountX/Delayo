@@ -32,7 +32,7 @@
       "weekend": "This weekend ({{day}}, {{time}})",
       "nextWeek": "Next week ({{day}}, {{time}})",
       "nextMonth": "Next month",
-      "someday": "Someday",
+      "someday": "Someday (random)",
       "custom": "Custom date & time",
       "recurring": "Recurring"
     },
@@ -86,7 +86,7 @@
     "sameDayOfMonth": "Same day of month",
     "sameDayOfWeek": "Same day of week",
     "specificDay": "Specific day",
-    "someday": "Someday",
+    "someday": "Someday (random)",
     "minMonths": "Minimum months",
     "maxMonths": "Maximum months"
   },
@@ -108,11 +108,7 @@
     "wakeUp": "Wake Up",
     "remove": "Remove",
     "untitledTab": "Untitled tab",
-    "actions": {
-      "wakeNow": "Wake Now",
-      "delete": "Delete",
-      "edit": "Edit"
-    }
+    "actions": "Actions"
   },
   "onboarding": {
     "welcome": {

@@ -7,6 +7,10 @@ function LanguageSelector(): React.ReactElement {
   const changeLanguage = (event: React.ChangeEvent<HTMLSelectElement>): void => {
     const newLanguage = event.target.value;
     i18n.changeLanguage(newLanguage);
+    
+    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+      chrome.storage.local.set({ savedLanguage: newLanguage });
+    }
   };
 
   return (

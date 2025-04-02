@@ -32,7 +32,7 @@
       "weekend": "Fin de semana ({{day}}, {{time}})",
       "nextWeek": "Próxima semana ({{day}}, {{time}})",
       "nextMonth": "Próximo mes",
-      "someday": "Algún día",
+      "someday": "Algún Día (aleatorio)",
       "custom": "Fecha personalizada",
       "recurring": "Repetir"
     },
@@ -86,7 +86,7 @@
     "sameDayOfMonth": "Mismo día del mes",
     "sameDayOfWeek": "Mismo día de la semana",
     "specificDay": "Día específico",
-    "someday": "Algún Día",
+    "someday": "Algún Día (aleatorio)",
     "minMonths": "Mínimo de meses",
     "maxMonths": "Máximo de meses"
   },
@@ -108,11 +108,7 @@
     "wakeUp": "Despertar",
     "remove": "Eliminar",
     "untitledTab": "Pestaña sin título",
-    "actions": {
-      "wakeNow": "Despertar Ahora",
-      "delete": "Eliminar",
-      "edit": "Editar"
-    }
+    "actions": "Acciones"
   },
   "onboarding": {
     "welcome": {
