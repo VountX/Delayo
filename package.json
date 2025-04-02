@@ -11,7 +11,8 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "preinstall": "npx only-allow pnpm",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "release": "standard-version"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
@@ -53,6 +54,7 @@
     "prettier-plugin-css-order": "^2.1.2",
     "prettier-plugin-tailwindcss": "^0.5.13",
     "rollup-plugin-visualizer": "^5.14.0",
+    "standard-version": "^9.5.0",
     "tailwindcss": "^3.4.3",
     "ts-prune": "^0.10.3",
     "typescript": "^5.4.3",

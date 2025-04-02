@@ -6,6 +6,7 @@
     "delete": "Eliminar",
     "edit": "Editar",
     "back": "Volver",
+    "close": "Cerrar",
     "settings": "Configuración",
     "tabs": "Pestañas",
     "tabs.singular": "Pestaña",
@@ -109,6 +110,15 @@
     "remove": "Eliminar",
     "untitledTab": "Pestaña sin título",
     "actions": "Acciones"
+  },
+  "donation": {
+    "title": "Apoya el Proyecto",
+    "description": "Si te gusta Delayo y quieres ayudar a mantenerlo, considera hacer una donación. ¡Cualquier cantidad es muy apreciada!",
+    "supportProject": "Apoya el Proyecto",
+    "support": "Apoyar",
+    "copyKey": "Copiar Clave",
+    "copiedSuccess": "¡Clave PIX copiada con éxito!",
+    "hideQRCode": "Ocultar Código QR"
   },
   "onboarding": {
     "welcome": {

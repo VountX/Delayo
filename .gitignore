@@ -77,3 +77,6 @@ src/**/*.d.ts
 .env.development.local
 .env.test.local
 .env.production.local
+
+# 🔄 Versionamento
+!CHANGELOG.md

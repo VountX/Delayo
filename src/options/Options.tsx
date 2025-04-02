@@ -2,6 +2,7 @@ import { DelayedTab } from '@types';
 import useTheme from '@utils/useTheme';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import DonationButton from '../components/DonationButton';
 import LanguageSelector from '../components/LanguageSelector';
 import '../i18n';
 
@@ -300,6 +301,9 @@ function Options(): React.ReactElement {
 
       <div className='mt-6 text-center text-sm'>
         <div className='flex flex-col items-center justify-center gap-2'>
+          <div className='flex items-center justify-center mb-4'>
+            <DonationButton isCompact={false} />
+          </div>
           <a
             href='https://github.com/allud1t/delayo'
             target='_blank'

@@ -1,0 +1,39 @@
+name: Publish to Chrome Web Store
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+    branches:
+      - release
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node + PNPM
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies and build
+        run: |
+          corepack enable
+          pnpm install
+          pnpm run build
+
+      - name: Zip extension
+        run: cd dist && zip -r ../delayo.zip .
+
+      - name: Upload to Chrome Web Store
+        uses: PlasmoHQ/chrome-webstore-upload-action@v1
+        with:
+          client_id: ${{ secrets.CWS_CLIENT_ID }}
+          client_secret: ${{ secrets.CWS_CLIENT_SECRET }}
+          refresh_token: ${{ secrets.CWS_REFRESH_TOKEN }}
+          extension_id: ${{ secrets.CWS_EXTENSION_ID }}
+          zip_path: ./delayo.zip

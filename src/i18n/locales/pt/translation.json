@@ -6,6 +6,7 @@
     "delete": "Excluir",
     "edit": "Editar",
     "back": "Voltar",
+    "close": "Fechar",
     "settings": "Configurações",
     "tabs": "Abas",
     "tabs.singular": "Aba",
@@ -109,6 +110,15 @@
     "remove": "Remover",
     "untitledTab": "Aba sem título",
     "actions": "Ações"
+  },
+  "donation": {
+    "title": "Apoie o Projeto",
+    "description": "Se você gosta do Delayo e quer ajudar a mantê-lo, considere fazer uma doação. Qualquer valor é muito apreciado!",
+    "supportProject": "Apoie o Projeto",
+    "support": "Apoiar",
+    "copyKey": "Copiar Chave",
+    "copiedSuccess": "Chave PIX copiada com sucesso!",
+    "hideQRCode": "Ocultar QR Code"
   },
   "onboarding": {
     "welcome": {

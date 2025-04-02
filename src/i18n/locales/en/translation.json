@@ -6,6 +6,7 @@
     "delete": "Delete",
     "edit": "Edit",
     "back": "Back",
+    "close": "Close",
     "settings": "Settings",
     "tabs": "Tabs",
     "tabs.singular": "Tab",
@@ -109,6 +110,15 @@
     "remove": "Remove",
     "untitledTab": "Untitled tab",
     "actions": "Actions"
+  },
+  "donation": {
+    "title": "Support the Project",
+    "description": "If you enjoy using Delayo and want to help maintain it, consider making a donation. Any amount is greatly appreciated!",
+    "supportProject": "Support the Project",
+    "support": "Support",
+    "copyKey": "Copy Key",
+    "copiedSuccess": "PIX key copied successfully!",
+    "hideQRCode": "Hide QR Code"
   },
   "onboarding": {
     "welcome": {

@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown 0.5s ease-in-out;
+  animation-fill-mode: both;
+}
+
 @font-face {
   font-weight: 900;
   src: url('../assets/fonts/Inter-Black.ttf');

@@ -1,10 +1,11 @@
-import React from 'react';
-import { Link } from '@tanstack/react-router';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Link } from '@tanstack/react-router';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import useTheme from '../../utils/useTheme';
+import DonationButton from '../../components/DonationButton';
 import DelaySettingsComponent from '../../options/DelaySettings';
+import useTheme from '../../utils/useTheme';
 
 function SettingsView(): React.ReactElement {
   const { theme, toggleTheme } = useTheme();
@@ -39,8 +40,14 @@ function SettingsView(): React.ReactElement {
           </button>
         </div>
 
-        <div className='overflow-y-auto max-h-[400px] pr-2 pb-2'>
-          <DelaySettingsComponent isPopup={true} />
+        <div className='flex flex-col'>
+          <div className='overflow-y-auto max-h-[350px] pr-2 pb-2'>
+            <DelaySettingsComponent isPopup={true} />
+          </div>
+          
+          <div className='mt-4 flex justify-center border-t border-base-200 pt-3'>
+            <DonationButton isCompact={true} />
+          </div>
         </div>
       </div>
     </div>
