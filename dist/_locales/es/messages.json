@@ -1,0 +1,10 @@
+{
+  "appName": {
+    "message": "Delayo",
+    "description": "El nombre de la extensión."
+  },
+  "appDesc": {
+    "message": "Ponga pestañas temporalmente a dormir y hágalas reaparecer cuando las necesite",
+    "description": "La descripción de la extensión."
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "../crx-manifest": {
+    "file": "assets/crx-manifest.js-CtMJ3Jte.js",
+    "name": "crx-manifest.js",
+    "src": "../crx-manifest",
+    "isEntry": true
+  },
+  "_index-!~{005}~.js": {
+    "file": "assets/index-B2sXdXH3.css",
+    "src": "_index-!~{005}~.js"
+  },
+  "_index-8FTq8HUb.js": {
+    "file": "assets/index-8FTq8HUb.js",
+    "name": "index",
+    "css": [
+      "assets/index-B2sXdXH3.css"
+    ],
+    "assets": [
+      "assets/pix_qr_code-DMjltbTb.svg"
+    ]
+  },
+  "options.html": {
+    "file": "assets/options.html-Cb11xC25.js",
+    "name": "options.html",
+    "src": "options.html",
+    "isEntry": true,
+    "imports": [
+      "_index-8FTq8HUb.js"
+    ],
+    "css": [
+      "assets/options-Bc8SxYZc.css"
+    ]
+  },
+  "popup.html": {
+    "file": "assets/popup.html-DVKnq_2d.js",
+    "name": "popup.html",
+    "src": "popup.html",
+    "isEntry": true,
+    "imports": [
+      "_index-8FTq8HUb.js"
+    ]
+  },
+  "src/assets/img/pix_qr_code.svg": {
+    "file": "assets/pix_qr_code-DMjltbTb.svg",
+    "src": "src/assets/img/pix_qr_code.svg"
+  },
+  "src/background/index.ts": {
+    "file": "assets/index.ts-Bohykhh_.js",
+    "name": "index.ts",
+    "src": "src/background/index.ts",
+    "isEntry": true
+  }
+}

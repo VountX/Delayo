@@ -1,0 +1,10 @@
+{
+  "appName": {
+    "message": "Delayo",
+    "description": "O nome da extensão."
+  },
+  "appDesc": {
+    "message": "Coloque abas temporariamente para dormir e faça-as reaparecer quando precisar",
+    "description": "A descrição da extensão."
+  }
+}
