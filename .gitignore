@@ -41,7 +41,10 @@ Desktop.ini
 
 # 🧠 TypeScript (se gerar tipos fora de src/)
 src/**/*.d.ts
+# Ignorar arquivos de tipos
 *.d.ts
+# Exceto este arquivo específico
+!src/types/custom.d.ts
 
 # 🛠️ VS Code
 .vscode/
