@@ -31,7 +31,11 @@
     "strictNullChecks": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "types": [
+      "chrome",
+      "node"
+    ]
   },
   "include": [
     "src/**/*",
@@ -41,9 +45,5 @@
   "exclude": [
     "node_modules",
     "dist"
-  ],
-  "types": [
-    "chrome",
-//    "node"
   ]
 }

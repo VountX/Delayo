@@ -1,4 +1,5 @@
 import { DelayedTab } from '@types';
+import normalizeDelayedTabs from '@utils/normalizeDelayedTabs';
 import useTheme from '@utils/useTheme';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +14,7 @@ function Options(): React.ReactElement {
   const [delayedTabItems, setDelayedTabs] = useState<DelayedTab[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'tabs' | 'settings'>('tabs');
-  const [selectedTabs, setSelectedTabs] = useState<number[]>([]);
+  const [selectedTabs, setSelectedTabs] = useState<string[]>([]);
   const { theme, toggleTheme } = useTheme();
   const { t, i18n } = useTranslation();
 
@@ -22,7 +23,8 @@ function Options(): React.ReactElement {
       setLoading(true);
       const { delayedTabs = [] } =
         await chrome.storage.local.get('delayedTabs');
-      const sortedTabs = [...delayedTabs].sort(
+      const normalizedTabs = normalizeDelayedTabs(delayedTabs);
+      const sortedTabs = [...normalizedTabs].sort(
         (a, b) => a.wakeTime - b.wakeTime
       );
       setDelayedTabs(sortedTabs);
@@ -41,7 +43,7 @@ function Options(): React.ReactElement {
     try {
       if (tab.url) {
         await chrome.tabs.create({ url: tab.url });
-        const updatedTabs = delayedTabItems.filter((t) => t.id !== tab.id);
+        const updatedTabs = delayedTabItems.filter((item) => item.id !== tab.id);
         await chrome.storage.local.set({ delayedTabs: updatedTabs });
         await chrome.alarms.clear(`delayed-tab-${tab.id}`);
         setDelayedTabs(updatedTabs);
@@ -54,7 +56,7 @@ function Options(): React.ReactElement {
 
   const removeTab = async (tab: DelayedTab): Promise<void> => {
     try {
-      const updatedTabs = delayedTabItems.filter((t) => t.id !== tab.id);
+      const updatedTabs = delayedTabItems.filter((item) => item.id !== tab.id);
       await chrome.storage.local.set({ delayedTabs: updatedTabs });
       await chrome.alarms.clear(`delayed-tab-${tab.id}`);
       setDelayedTabs(updatedTabs);
@@ -128,7 +130,7 @@ function Options(): React.ReactElement {
     }
   };
 
-  const toggleTabSelection = (tabId: number): void => {
+  const toggleTabSelection = (tabId: string): void => {
     setSelectedTabs(prev =>
       prev.includes(tabId)
         ? prev.filter(id => id !== tabId)
@@ -145,6 +147,7 @@ function Options(): React.ReactElement {
               <tr>
                 <th className='w-12'>
                   <label>
+                    <span className='sr-only'>Select all</span>
                     <input
                       type='checkbox'
                       className='checkbox'
@@ -170,6 +173,7 @@ function Options(): React.ReactElement {
                 <tr key={tab.id}>
                   <td>
                     <label>
+                      <span className='sr-only'>Select tab</span>
                       <input
                         type='checkbox'
                         className='checkbox'
