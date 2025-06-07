@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import useTheme from '../../utils/useTheme';
+import generateUniqueTabId from '@utils/generateUniqueTabId';
 
 interface DelaySettings {
   laterToday: number; // hours
@@ -411,7 +412,7 @@ function MainView(): React.ReactElement {
       for (const tab of tabsToDelay) {
         if (!tab.id) continue;
 
-        const newTabId = Date.now() + Math.floor(Math.random() * 10000);
+        const newTabId = generateUniqueTabId();
 
         const tabInfo = {
           id: newTabId,

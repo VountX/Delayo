@@ -1,4 +1,5 @@
 import { DelayedTab, RecurrencePattern } from '@types';
+import generateUniqueTabId from '@utils/generateUniqueTabId';
 
 chrome.runtime.onInstalled.addListener(({ reason }) => {
   if (reason === 'install') {
@@ -99,7 +100,7 @@ function calculateNextWakeTime(
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name.startsWith('delayed-tab-')) {
     try {
-      const tabId = parseInt(alarm.name.replace('delayed-tab-', ''), 10);
+      const tabId = alarm.name.replace('delayed-tab-', '');
 
       const { delayedTabs = [] } =
         await chrome.storage.local.get('delayedTabs');
@@ -129,7 +130,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
               wakeTime: nextWakeTime,
             };
 
-            const newTabId = Date.now(); 
+            const newTabId = generateUniqueTabId();
             updatedTab.id = newTabId;
 
             const updatedTabs = delayedTabs.filter(
@@ -185,7 +186,7 @@ chrome.runtime.onStartup.addListener(async () => {
             const nextWakeTime = calculateNextWakeTime(tab.recurrencePattern);
 
             if (nextWakeTime) {
-              const newTabId = Date.now();
+              const newTabId = generateUniqueTabId();
               const updatedTab = {
                 ...tab,
                 id: newTabId,

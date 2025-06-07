@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from '@tanstack/react-router';
 import React, { useEffect, useState } from 'react';
+import generateUniqueTabId from '@utils/generateUniqueTabId';
 import { useTranslation } from 'react-i18next';
 
 function CustomDelayView(): React.ReactElement {
@@ -97,7 +98,7 @@ function CustomDelayView(): React.ReactElement {
         for (const tab of tabsToDelay) {
           if (!tab.id) continue;
 
-          const newTabId = Date.now() + Math.floor(Math.random() * 10000);
+          const newTabId = generateUniqueTabId();
 
           const tabInfo = {
             id: newTabId,

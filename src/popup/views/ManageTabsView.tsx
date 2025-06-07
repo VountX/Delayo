@@ -9,7 +9,7 @@ import useTheme from '../../utils/useTheme';
 function ManageTabsView(): React.ReactElement {
   const [delayedTabs, setDelayedTabs] = useState<DelayedTab[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedTabs, setSelectedTabs] = useState<number[]>([]);
+  const [selectedTabs, setSelectedTabs] = useState<string[]>([]);
   const [selectMode, setSelectMode] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { t } = useTranslation();
@@ -75,7 +75,7 @@ function ManageTabsView(): React.ReactElement {
     }
   };
 
-  const toggleSelectTab = (tabId: number): void => {
+  const toggleSelectTab = (tabId: string): void => {
     setSelectedTabs(prev => {
       if (prev.includes(tabId)) {
         return prev.filter(id => id !== tabId);

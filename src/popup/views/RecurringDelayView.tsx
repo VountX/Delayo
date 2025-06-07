@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from '@tanstack/react-router';
 import { DelayedTab, RecurrencePattern } from '@types';
 import React, { useEffect, useId, useState } from 'react';
+import generateUniqueTabId from '@utils/generateUniqueTabId';
 import { useTranslation } from 'react-i18next';
 
 function FormControl({
@@ -186,7 +187,7 @@ function RecurringDelayView(): React.ReactElement {
         for (const tab of tabsToDelay) {
           if (!tab.id) continue;
 
-          const newTabId = Date.now() + Math.floor(Math.random() * 10000);
+          const newTabId = generateUniqueTabId();
 
           const tabInfo: DelayedTab = {
             id: newTabId,

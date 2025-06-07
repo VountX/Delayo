@@ -13,7 +13,7 @@ function Options(): React.ReactElement {
   const [delayedTabItems, setDelayedTabs] = useState<DelayedTab[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'tabs' | 'settings'>('tabs');
-  const [selectedTabs, setSelectedTabs] = useState<number[]>([]);
+  const [selectedTabs, setSelectedTabs] = useState<string[]>([]);
   const { theme, toggleTheme } = useTheme();
   const { t, i18n } = useTranslation();
 
@@ -128,7 +128,7 @@ function Options(): React.ReactElement {
     }
   };
 
-  const toggleTabSelection = (tabId: number): void => {
+  const toggleTabSelection = (tabId: string): void => {
     setSelectedTabs(prev =>
       prev.includes(tabId)
         ? prev.filter(id => id !== tabId)
