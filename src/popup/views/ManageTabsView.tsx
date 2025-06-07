@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from '@tanstack/react-router';
 import { DelayedTab } from '@types';
+import normalizeDelayedTabs from '@utils/normalizeDelayedTabs';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -19,10 +20,7 @@ function ManageTabsView(): React.ReactElement {
       try {
         setLoading(true);
         const { delayedTabs: storedTabs = [] } = await chrome.storage.local.get('delayedTabs');
-        const normalizedTabs = storedTabs.map((tab: DelayedTab) => ({
-          ...tab,
-          id: String(tab.id),
-        }));
+        const normalizedTabs = normalizeDelayedTabs(storedTabs);
         const sortedTabs = [...normalizedTabs].sort(
           (a, b) => a.wakeTime - b.wakeTime
         );

@@ -1,5 +1,6 @@
 import { DelayedTab, RecurrencePattern } from '@types';
 import generateUniqueTabId from '@utils/generateUniqueTabId';
+import normalizeDelayedTabs from '@utils/normalizeDelayedTabs';
 
 chrome.runtime.onInstalled.addListener(({ reason }) => {
   if (reason === 'install') {
@@ -104,10 +105,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 
       const { delayedTabs = [] } =
         await chrome.storage.local.get('delayedTabs');
-      const normalizedTabs = delayedTabs.map((tab: DelayedTab) => ({
-        ...tab,
-        id: String(tab.id),
-      }));
+      const normalizedTabs = normalizeDelayedTabs(delayedTabs);
 
       const delayedTab = normalizedTabs.find(
         (tab: DelayedTab) => tab.id === tabId
@@ -177,10 +175,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 chrome.runtime.onStartup.addListener(async () => {
   try {
     const { delayedTabs = [] } = await chrome.storage.local.get('delayedTabs');
-    const normalizedTabs = delayedTabs.map((tab: DelayedTab) => ({
-      ...tab,
-      id: String(tab.id),
-    }));
+    const normalizedTabs = normalizeDelayedTabs(delayedTabs);
     const now = Date.now();
 
     const tabsToWake = normalizedTabs.filter(

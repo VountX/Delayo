@@ -1,4 +1,5 @@
 import { DelayedTab } from '@types';
+import normalizeDelayedTabs from '@utils/normalizeDelayedTabs';
 import useTheme from '@utils/useTheme';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,10 +23,7 @@ function Options(): React.ReactElement {
       setLoading(true);
       const { delayedTabs = [] } =
         await chrome.storage.local.get('delayedTabs');
-      const normalizedTabs = delayedTabs.map((tab: DelayedTab) => ({
-        ...tab,
-        id: String(tab.id),
-      }));
+      const normalizedTabs = normalizeDelayedTabs(delayedTabs);
       const sortedTabs = [...normalizedTabs].sort(
         (a, b) => a.wakeTime - b.wakeTime
       );
