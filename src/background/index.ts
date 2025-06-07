@@ -1,4 +1,6 @@
 import { DelayedTab, RecurrencePattern } from '@types';
+import generateUniqueTabId from '@utils/generateUniqueTabId';
+import normalizeDelayedTabs from '@utils/normalizeDelayedTabs';
 
 chrome.runtime.onInstalled.addListener(({ reason }) => {
   if (reason === 'install') {
@@ -99,12 +101,13 @@ function calculateNextWakeTime(
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name.startsWith('delayed-tab-')) {
     try {
-      const tabId = parseInt(alarm.name.replace('delayed-tab-', ''), 10);
+      const tabId = alarm.name.replace('delayed-tab-', '');
 
       const { delayedTabs = [] } =
         await chrome.storage.local.get('delayedTabs');
+      const normalizedTabs = normalizeDelayedTabs(delayedTabs);
 
-      const delayedTab = delayedTabs.find(
+      const delayedTab = normalizedTabs.find(
         (tab: DelayedTab) => tab.id === tabId
       );
 
@@ -123,18 +126,23 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
             delayedTab.recurrencePattern
           );
 
+          // Refresh tabs before updating to avoid race conditions when multiple
+          // alarms fire simultaneously
+          const { delayedTabs: currentTabs = [] } = await chrome.storage.local.get(
+            'delayedTabs'
+          );
+          const updatedTabs = currentTabs.filter(
+            (tab: DelayedTab) => String(tab.id) !== tabId
+          );
+
           if (nextWakeTime) {
             const updatedTab = {
               ...delayedTab,
               wakeTime: nextWakeTime,
             };
 
-            const newTabId = Date.now(); 
+            const newTabId = generateUniqueTabId();
             updatedTab.id = newTabId;
-
-            const updatedTabs = delayedTabs.filter(
-              (tab: DelayedTab) => tab.id !== tabId
-            );
             updatedTabs.push(updatedTab);
 
             await chrome.storage.local.set({ delayedTabs: updatedTabs });
@@ -142,16 +150,15 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
             await chrome.alarms.create(`delayed-tab-${newTabId}`, {
               when: nextWakeTime,
             });
-
           } else {
-            const updatedTabs = delayedTabs.filter(
-              (tab: DelayedTab) => tab.id !== tabId
-            );
             await chrome.storage.local.set({ delayedTabs: updatedTabs });
           }
         } else {
-          const updatedTabs = delayedTabs.filter(
-            (tab: DelayedTab) => tab.id !== tabId
+          const { delayedTabs: currentTabs = [] } = await chrome.storage.local.get(
+            'delayedTabs'
+          );
+          const updatedTabs = currentTabs.filter(
+            (tab: DelayedTab) => String(tab.id) !== tabId
           );
           await chrome.storage.local.set({ delayedTabs: updatedTabs });
         }
@@ -168,12 +175,13 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 chrome.runtime.onStartup.addListener(async () => {
   try {
     const { delayedTabs = [] } = await chrome.storage.local.get('delayedTabs');
+    const normalizedTabs = normalizeDelayedTabs(delayedTabs);
     const now = Date.now();
 
-    const tabsToWake = delayedTabs.filter(
+    const tabsToWake = normalizedTabs.filter(
       (tab: DelayedTab) => tab.wakeTime <= now
     );
-    const remainingTabs = delayedTabs.filter(
+    const remainingTabs = normalizedTabs.filter(
       (tab: DelayedTab) => tab.wakeTime > now
     );
 
@@ -185,7 +193,7 @@ chrome.runtime.onStartup.addListener(async () => {
             const nextWakeTime = calculateNextWakeTime(tab.recurrencePattern);
 
             if (nextWakeTime) {
-              const newTabId = Date.now();
+              const newTabId = generateUniqueTabId();
               const updatedTab = {
                 ...tab,
                 id: newTabId,
