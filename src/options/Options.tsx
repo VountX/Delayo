@@ -170,10 +170,11 @@ function Options(): React.ReactElement {
               {delayedTabItems.map((tab) => (
                 <tr key={tab.id}>
                   <td>
-                    <label aria-label='Select tab'>
+                    <label>
                       <input
                         type='checkbox'
                         className='checkbox'
+                        aria-label='Select tab'
                         checked={selectedTabs.includes(tab.id)}
                         onChange={() => toggleTabSelection(tab.id)}
                       />
