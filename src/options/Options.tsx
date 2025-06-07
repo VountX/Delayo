@@ -22,7 +22,11 @@ function Options(): React.ReactElement {
       setLoading(true);
       const { delayedTabs = [] } =
         await chrome.storage.local.get('delayedTabs');
-      const sortedTabs = [...delayedTabs].sort(
+      const normalizedTabs = delayedTabs.map((tab: DelayedTab) => ({
+        ...tab,
+        id: String(tab.id),
+      }));
+      const sortedTabs = [...normalizedTabs].sort(
         (a, b) => a.wakeTime - b.wakeTime
       );
       setDelayedTabs(sortedTabs);

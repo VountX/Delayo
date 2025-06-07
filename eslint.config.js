@@ -30,6 +30,7 @@ export default [
         clearTimeout: 'readonly',
         localStorage: 'readonly',
         __dirname: 'readonly', // usado no vite.config.ts
+        crypto: 'readonly',
       },
     },
     plugins: {
