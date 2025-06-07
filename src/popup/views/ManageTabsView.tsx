@@ -9,7 +9,7 @@ import useTheme from '../../utils/useTheme';
 function ManageTabsView(): React.ReactElement {
   const [delayedTabs, setDelayedTabs] = useState<DelayedTab[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedTabs, setSelectedTabs] = useState<number[]>([]);
+  const [selectedTabs, setSelectedTabs] = useState<string[]>([]);
   const [selectMode, setSelectMode] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { t } = useTranslation();
@@ -19,7 +19,16 @@ function ManageTabsView(): React.ReactElement {
       try {
         setLoading(true);
         const { delayedTabs = [] } = await chrome.storage.local.get('delayedTabs');
-        const sortedTabs = [...delayedTabs].sort(
+        let updated = false;
+        const normalizedTabs = delayedTabs.map((tab: DelayedTab) => {
+          const newId = String(tab.id);
+          if (newId !== tab.id) updated = true;
+          return { ...tab, id: newId };
+        });
+        if (updated) {
+          await chrome.storage.local.set({ delayedTabs: normalizedTabs });
+        }
+        const sortedTabs = [...normalizedTabs].sort(
           (a, b) => a.wakeTime - b.wakeTime
         );
         setDelayedTabs(sortedTabs);
@@ -75,7 +84,7 @@ function ManageTabsView(): React.ReactElement {
     }
   };
 
-  const toggleSelectTab = (tabId: number): void => {
+  const toggleSelectTab = (tabId: string): void => {
     setSelectedTabs(prev => {
       if (prev.includes(tabId)) {
         return prev.filter(id => id !== tabId);
@@ -88,7 +97,7 @@ function ManageTabsView(): React.ReactElement {
   const wakeSelectedTabs = async (): Promise<void> => {
     try {
       for (const tabId of selectedTabs) {
-        const tab = delayedTabs.find(t => t.id === tabId);
+        const tab = delayedTabs.find(t => String(t.id) === tabId);
         if (tab && tab.url) {
           await chrome.tabs.create({ url: tab.url });
         }
