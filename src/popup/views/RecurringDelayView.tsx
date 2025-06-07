@@ -185,9 +185,11 @@ function RecurringDelayView(): React.ReactElement {
         
         for (const tab of tabsToDelay) {
           if (!tab.id) continue;
-          
+
+          const newTabId = Date.now() + Math.floor(Math.random() * 10000);
+
           const tabInfo: DelayedTab = {
-            id: tab.id,
+            id: newTabId,
             url: tab.url,
             title: tab.title,
             favicon: tab.favIconUrl,
