@@ -144,10 +144,11 @@ function Options(): React.ReactElement {
             <thead>
               <tr>
                 <th className='w-12'>
-                  <label aria-label='Select all tabs'>
+                  <label>
                     <input
                       type='checkbox'
                       className='checkbox'
+                      aria-label='Select all tabs'
                       checked={selectedTabs.length === delayedTabItems.length && delayedTabItems.length > 0}
                       onChange={() =>
                         setSelectedTabs(
