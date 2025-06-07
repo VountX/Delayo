@@ -9,6 +9,7 @@ import pluginJsxA11y from 'eslint-plugin-jsx-a11y'
 import prettier from 'eslint-config-prettier'
 
 export default [
+  { ignores: ['dist/**'] },
   js.configs.recommended,
 
   {
@@ -31,6 +32,8 @@ export default [
         localStorage: 'readonly',
         __dirname: 'readonly', // usado no vite.config.ts
         crypto: 'readonly',
+        navigator: 'readonly',
+        process: 'readonly',
       },
     },
     plugins: {

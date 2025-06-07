@@ -45,7 +45,7 @@ function Options(): React.ReactElement {
     try {
       if (tab.url) {
         await chrome.tabs.create({ url: tab.url });
-        const updatedTabs = delayedTabItems.filter((t) => t.id !== tab.id);
+        const updatedTabs = delayedTabItems.filter((item) => item.id !== tab.id);
         await chrome.storage.local.set({ delayedTabs: updatedTabs });
         await chrome.alarms.clear(`delayed-tab-${tab.id}`);
         setDelayedTabs(updatedTabs);
@@ -58,7 +58,7 @@ function Options(): React.ReactElement {
 
   const removeTab = async (tab: DelayedTab): Promise<void> => {
     try {
-      const updatedTabs = delayedTabItems.filter((t) => t.id !== tab.id);
+      const updatedTabs = delayedTabItems.filter((item) => item.id !== tab.id);
       await chrome.storage.local.set({ delayedTabs: updatedTabs });
       await chrome.alarms.clear(`delayed-tab-${tab.id}`);
       setDelayedTabs(updatedTabs);
@@ -149,6 +149,7 @@ function Options(): React.ReactElement {
               <tr>
                 <th className='w-12'>
                   <label>
+                    <span className='sr-only'>Select all</span>
                     <input
                       type='checkbox'
                       className='checkbox'
@@ -174,6 +175,7 @@ function Options(): React.ReactElement {
                 <tr key={tab.id}>
                   <td>
                     <label>
+                      <span className='sr-only'>Select tab</span>
                       <input
                         type='checkbox'
                         className='checkbox'
