@@ -18,8 +18,8 @@ function ManageTabsView(): React.ReactElement {
     const loadDelayedTabs = async (): Promise<void> => {
       try {
         setLoading(true);
-        const { delayedTabs = [] } = await chrome.storage.local.get('delayedTabs');
-        const sortedTabs = [...delayedTabs].sort(
+        const { delayedTabs: storedTabs = [] } = await chrome.storage.local.get('delayedTabs');
+        const sortedTabs = [...storedTabs].sort(
           (a, b) => a.wakeTime - b.wakeTime
         );
         setDelayedTabs(sortedTabs);
@@ -37,7 +37,7 @@ function ManageTabsView(): React.ReactElement {
     try {
       if (tab.url) {
         await chrome.tabs.create({ url: tab.url });
-        const updatedTabs = delayedTabs.filter((t) => t.id !== tab.id);
+        const updatedTabs = delayedTabs.filter((tabItem) => tabItem.id !== tab.id);
         await chrome.storage.local.set({ delayedTabs: updatedTabs });
         await chrome.alarms.clear(`delayed-tab-${tab.id}`);
         setDelayedTabs(updatedTabs);
@@ -50,7 +50,7 @@ function ManageTabsView(): React.ReactElement {
 
   const removeTab = async (tab: DelayedTab): Promise<void> => {
     try {
-      const updatedTabs = delayedTabs.filter((t) => t.id !== tab.id);
+      const updatedTabs = delayedTabs.filter((tabItem) => tabItem.id !== tab.id);
       await chrome.storage.local.set({ delayedTabs: updatedTabs });
       await chrome.alarms.clear(`delayed-tab-${tab.id}`);
       setDelayedTabs(updatedTabs);
@@ -88,13 +88,13 @@ function ManageTabsView(): React.ReactElement {
   const wakeSelectedTabs = async (): Promise<void> => {
     try {
       for (const tabId of selectedTabs) {
-        const tab = delayedTabs.find(t => t.id === tabId);
+        const tab = delayedTabs.find((tabItem) => tabItem.id === tabId);
         if (tab && tab.url) {
           await chrome.tabs.create({ url: tab.url });
         }
       }
 
-      const updatedTabs = delayedTabs.filter(tab => !selectedTabs.includes(tab.id));
+      const updatedTabs = delayedTabs.filter((tabItem) => !selectedTabs.includes(tabItem.id));
       await chrome.storage.local.set({ delayedTabs: updatedTabs });
 
       for (const tabId of selectedTabs) {
@@ -110,7 +110,7 @@ function ManageTabsView(): React.ReactElement {
 
   const removeSelectedTabs = async (): Promise<void> => {
     try {
-      const updatedTabs = delayedTabs.filter(tab => !selectedTabs.includes(tab.id));
+      const updatedTabs = delayedTabs.filter((tabItem) => !selectedTabs.includes(tabItem.id));
       await chrome.storage.local.set({ delayedTabs: updatedTabs });
 
       for (const tabId of selectedTabs) {

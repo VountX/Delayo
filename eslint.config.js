@@ -29,6 +29,8 @@ export default [
         setTimeout: 'readonly',
         clearTimeout: 'readonly',
         localStorage: 'readonly',
+        navigator: 'readonly',
+        process: 'readonly',
         __dirname: 'readonly', // usado no vite.config.ts
       },
     },
