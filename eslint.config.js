@@ -32,7 +32,6 @@ export default [
         localStorage: 'readonly',
         crypto: 'readonly',
         __dirname: 'readonly', // usado no vite.config.ts
-        crypto: 'readonly',
         navigator: 'readonly',
         process: 'readonly',
       },

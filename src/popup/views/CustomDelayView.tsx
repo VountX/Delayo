@@ -45,7 +45,7 @@ function CustomDelayView(): React.ReactElement {
           });
           setAllWindowTabs(allTabs);
         } else {
-          //dev
+          // Development mode
           const mockTab = {
             id: 123,
             url: 'https://example.com',

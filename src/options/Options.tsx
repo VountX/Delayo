@@ -29,7 +29,7 @@ function Options(): React.ReactElement {
       );
       setDelayedTabs(sortedTabs);
     } catch (error) {
-      //
+      // Handle error while loading delayed tabs
     } finally {
       setLoading(false);
     }
@@ -50,7 +50,7 @@ function Options(): React.ReactElement {
         setSelectedTabs(selectedTabs.filter(id => id !== tab.id));
       }
     } catch (error) {
-      //
+      // Handle error while waking the tab immediately
     }
   };
 
@@ -61,9 +61,9 @@ function Options(): React.ReactElement {
       await chrome.alarms.clear(`delayed-tab-${tab.id}`);
       setDelayedTabs(updatedTabs);
       setSelectedTabs(selectedTabs.filter(id => id !== tab.id));
-    } catch (error) {
-      //
-    }
+  } catch (error) {
+    // Handle error while removing a tab
+  }
   };
 
   const formatDate = (timestamp: number): string => {
@@ -125,9 +125,9 @@ function Options(): React.ReactElement {
       await chrome.storage.local.set({ delayedTabs: updatedTabs });
       setDelayedTabs(updatedTabs);
       setSelectedTabs([]);
-    } catch (error) {
-      //
-    }
+  } catch (error) {
+    // Handle error while waking selected tabs
+  }
   };
 
   const toggleTabSelection = (tabId: string): void => {
@@ -151,8 +151,6 @@ function Options(): React.ReactElement {
                     <input
                       type='checkbox'
                       className='checkbox'
-                    <label>
-                      <span className='sr-only'>Select tab</span>
                       checked={selectedTabs.length === delayedTabItems.length && delayedTabItems.length > 0}
                       onChange={() =>
                         setSelectedTabs(

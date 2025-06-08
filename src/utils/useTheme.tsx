@@ -30,7 +30,7 @@ const useTheme = (): {
           document.documentElement.setAttribute('data-theme', savedTheme);
         }
       } catch (error) {
-        //
+        // Fallback to light theme if stored value cannot be loaded
         setTheme('light');
         document.documentElement.setAttribute('data-theme', 'light');
       }
@@ -48,7 +48,7 @@ const useTheme = (): {
           document.documentElement.setAttribute('data-theme', newTheme);
         }
       } catch (error) {
-        // 
+        // Ignore errors during theme change detection
       }
     };
 

@@ -164,9 +164,9 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
         }
       }
     } catch (error) {
-      //
+      // Handle errors waking the tab
       if (chrome.runtime.lastError) {
-        //
+        // Log runtime errors for debugging
       }
     }
   }
@@ -220,9 +220,9 @@ chrome.runtime.onStartup.addListener(async () => {
       )
     );
   } catch (error) {
-    //
+    // Handle errors during startup wake process
     if (chrome.runtime.lastError) {
-      //
+      // Log runtime errors for debugging
     }
   }
 });
