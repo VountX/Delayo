@@ -154,8 +154,6 @@ function Options(): React.ReactElement {
                     <input
                       type='checkbox'
                       className='checkbox'
-                    <label>
-                      <span className='sr-only'>Select tab</span>
                       checked={selectedTabs.length === delayedTabItems.length && delayedTabItems.length > 0}
                       onChange={() =>
                         setSelectedTabs(
