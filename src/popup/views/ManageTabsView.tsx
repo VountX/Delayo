@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from '@tanstack/react-router';
 import { DelayedTab } from '@types';
+import normalizeDelayedTabs from '@utils/normalizeDelayedTabs';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -18,14 +19,9 @@ function ManageTabsView(): React.ReactElement {
     const loadDelayedTabs = async (): Promise<void> => {
       try {
         setLoading(true);
-        const { delayedTabs = [] } = await chrome.storage.local.get('delayedTabs');
-        let updated = false;
-        const normalizedTabs = delayedTabs.map((tab: DelayedTab) => {
-          const newId = String(tab.id);
-          if (newId !== tab.id) updated = true;
-          return { ...tab, id: newId };
-        });
-        if (updated) {
+        const { delayedTabs: storedTabs = [] } = await chrome.storage.local.get('delayedTabs');
+        const normalizedTabs = normalizeDelayedTabs(storedTabs);
+        if (storedTabs.some(tab => typeof tab.id !== 'string')) {
           await chrome.storage.local.set({ delayedTabs: normalizedTabs });
         }
         const sortedTabs = [...normalizedTabs].sort(
@@ -46,7 +42,7 @@ function ManageTabsView(): React.ReactElement {
     try {
       if (tab.url) {
         await chrome.tabs.create({ url: tab.url });
-        const updatedTabs = delayedTabs.filter((t) => t.id !== tab.id);
+        const updatedTabs = delayedTabs.filter((item) => item.id !== tab.id);
         await chrome.storage.local.set({ delayedTabs: updatedTabs });
         await chrome.alarms.clear(`delayed-tab-${tab.id}`);
         setDelayedTabs(updatedTabs);
@@ -59,7 +55,7 @@ function ManageTabsView(): React.ReactElement {
 
   const removeTab = async (tab: DelayedTab): Promise<void> => {
     try {
-      const updatedTabs = delayedTabs.filter((t) => t.id !== tab.id);
+      const updatedTabs = delayedTabs.filter((item) => item.id !== tab.id);
       await chrome.storage.local.set({ delayedTabs: updatedTabs });
       await chrome.alarms.clear(`delayed-tab-${tab.id}`);
       setDelayedTabs(updatedTabs);
@@ -97,7 +93,7 @@ function ManageTabsView(): React.ReactElement {
   const wakeSelectedTabs = async (): Promise<void> => {
     try {
       for (const tabId of selectedTabs) {
-        const tab = delayedTabs.find(t => String(t.id) === tabId);
+        const tab = delayedTabs.find(item => String(item.id) === tabId);
         if (tab && tab.url) {
           await chrome.tabs.create({ url: tab.url });
         }

@@ -1,4 +1,5 @@
 import { DelayedTab } from '@types';
+import normalizeDelayedTabs from '@utils/normalizeDelayedTabs';
 import useTheme from '@utils/useTheme';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,13 +23,8 @@ function Options(): React.ReactElement {
       setLoading(true);
       const { delayedTabs = [] } =
         await chrome.storage.local.get('delayedTabs');
-      let updated = false;
-      const normalizedTabs = delayedTabs.map((tab: DelayedTab) => {
-        const newId = String(tab.id);
-        if (newId !== tab.id) updated = true;
-        return { ...tab, id: newId };
-      });
-      if (updated) {
+      const normalizedTabs = normalizeDelayedTabs(delayedTabs);
+      if (delayedTabs.some(tab => typeof tab.id !== 'string')) {
         await chrome.storage.local.set({ delayedTabs: normalizedTabs });
       }
       const sortedTabs = [...normalizedTabs].sort(
@@ -50,7 +46,7 @@ function Options(): React.ReactElement {
     try {
       if (tab.url) {
         await chrome.tabs.create({ url: tab.url });
-        const updatedTabs = delayedTabItems.filter((t) => t.id !== tab.id);
+        const updatedTabs = delayedTabItems.filter((item) => item.id !== tab.id);
         await chrome.storage.local.set({ delayedTabs: updatedTabs });
         await chrome.alarms.clear(`delayed-tab-${tab.id}`);
         setDelayedTabs(updatedTabs);
@@ -63,7 +59,7 @@ function Options(): React.ReactElement {
 
   const removeTab = async (tab: DelayedTab): Promise<void> => {
     try {
-      const updatedTabs = delayedTabItems.filter((t) => t.id !== tab.id);
+      const updatedTabs = delayedTabItems.filter((item) => item.id !== tab.id);
       await chrome.storage.local.set({ delayedTabs: updatedTabs });
       await chrome.alarms.clear(`delayed-tab-${tab.id}`);
       setDelayedTabs(updatedTabs);
@@ -154,9 +150,12 @@ function Options(): React.ReactElement {
               <tr>
                 <th className='w-12'>
                   <label>
+                    <span className='sr-only'>Select all</span>
                     <input
                       type='checkbox'
                       className='checkbox'
+                    <label>
+                      <span className='sr-only'>Select tab</span>
                       checked={selectedTabs.length === delayedTabItems.length && delayedTabItems.length > 0}
                       onChange={() =>
                         setSelectedTabs(
@@ -179,9 +178,11 @@ function Options(): React.ReactElement {
                 <tr key={tab.id}>
                   <td>
                     <label>
+                      <span className='sr-only'>Select tab</span>
                       <input
                         type='checkbox'
                         className='checkbox'
+                        aria-label='Select tab'
                         checked={selectedTabs.includes(tab.id)}
                         onChange={() => toggleTabSelection(tab.id)}
                       />

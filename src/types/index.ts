@@ -16,7 +16,7 @@ export interface RecurrencePattern {
 }
 
 export interface DelayedTab {
-  id: number | string;
+  id: string;
   url?: string;
   title?: string;
   favicon?: string;
