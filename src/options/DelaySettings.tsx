@@ -58,9 +58,9 @@ function DelaySettingsComponent({ isPopup = false }: DelaySettingsComponentProps
         const { delaySettings = defaultSettings } =
           await chrome.storage.local.get('delaySettings');
         setSettings(delaySettings);
-      } catch (error) {
-        //
-      } finally {
+        } catch (error) {
+          // Handle error while loading settings
+        } finally {
         setLoading(false);
       }
     };
@@ -68,14 +68,14 @@ function DelaySettingsComponent({ isPopup = false }: DelaySettingsComponentProps
     loadSettings();
   }, []);
 
-  //
+  // Save settings to local storage
   const saveSettings = async (): Promise<void> => {
     try {
       await chrome.storage.local.set({ delaySettings: settings });
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (error) {
-      //
+      // Handle error while saving settings
     }
   };
 
@@ -83,7 +83,7 @@ function DelaySettingsComponent({ isPopup = false }: DelaySettingsComponentProps
     setSettings(defaultSettings);
   };
 
-  //
+  // Update a specific delay setting value
   const updateSetting = <K extends keyof DelaySettings>(
     key: K,
     value: DelaySettings[K]
@@ -252,7 +252,7 @@ function DelaySettingsComponent({ isPopup = false }: DelaySettingsComponentProps
               </div>
             )}
             
-            {/* Removido o input de horário para 'mesmo dia da semana' conforme solicitado */}
+            {/* Removed the time input for 'same day of the week' */}
           </div>
 
           {/* Next Month */}
