@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.1.1 (2025-06-13)
+
+### Bug Fixes
+
+* **i18n:** add endDate label ([b2bf834](https://github.com/VountX/Delayo/commit/b2bf834654a89e545766a508f7b443202dd55c7b))
+* clean up comments and lint ([f195065](https://github.com/VountX/Delayo/commit/f1950653dd0865de788842416df66e0c6f8abf49))
+* ensure multi-tab wake and lint config ([bb3338e](https://github.com/VountX/Delayo/commit/bb3338e8114035949616542023d5608101b0df55))
+* **ci:** point upload action to ExtensionNinja/extension-publish@main ([960dd56](https://github.com/VountX/Delayo/commit/960dd56c5c307677571e5df3bec339fe6844e8d7))
+
 ## 1.1.0 (2025-04-02)
 
 

@@ -1,3 +1,58 @@
+# Contributing to Delayo 🚀
+
+Thank you for your interest in contributing to **Delayo**!
+This project is open source and welcomes constructive contributions of all kinds.
+
+## How to contribute
+
+### 🐛 Reporting bugs
+
+1. Check if the issue has already been reported
+2. Open a new [issue](https://github.com/seu-usuario/delayo/issues) with:
+    - Clear description
+    - Steps to reproduce
+    - Expected vs. observed behavior
+    - Screenshots (if applicable)
+
+### ✨ Improvement suggestions
+
+Feature proposals, UX ideas, or integrations are welcome!
+Describe the motivation behind the idea and how it could benefit users.
+
+### 💻 Submitting code (Pull Request)
+
+1. Fork the project
+2. Create a descriptive branch:
+   ```bash
+   git checkout -b feat/feature-name
+   ```
+3. Follow the code and commit standards (we use commitlint)
+4. Ensure all tests pass (if any)
+5. Open a Pull Request explaining what was done
+
+### 🧹 Conventions
+
+- Use semantic commit messages (feat:, fix:, docs:, chore:)
+- Code formatting via eslint and prettier
+- UI: we follow Tailwind + DaisyUI
+
+### 🤝 Code of Conduct
+
+We expect respect, collaboration, and inclusiveness.
+Read our Code of Conduct (to be included) for details.
+
+### 🧾 License
+
+By submitting a contribution, you agree it will be licensed under
+the [MIT License](https://opensource.org/license/mit).
+
+---
+For any questions, open an issue or contact us directly. Thank you for strengthening Delayo!
+
+---
+
+## 🇧🇷 Versão em Português
+
 # Contribuindo com o Delayo 🚀
 
 Obrigado por se interessar em contribuir com o **Delayo**!  
