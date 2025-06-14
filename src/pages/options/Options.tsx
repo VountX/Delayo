@@ -3,9 +3,9 @@ import normalizeDelayedTabs from '@utils/normalizeDelayedTabs';
 import useTheme from '@utils/useTheme';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import DonationButton from '../components/DonationButton';
-import LanguageSelector from '../components/LanguageSelector';
-import '../i18n';
+import DonationButton from '../../components/DonationButton';
+import LanguageSelector from '../../components/LanguageSelector';
+import '../../i18n';
 
 import DelaySettingsComponent from './DelaySettings';
 import './options.css';

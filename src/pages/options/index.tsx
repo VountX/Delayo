@@ -1,10 +1,10 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import '../i18n';
+import '../../i18n';
 
 import Options from './Options';
 
-import '../index.css';
+import '../../index.css';
 
 const root = document.getElementById('root');
 

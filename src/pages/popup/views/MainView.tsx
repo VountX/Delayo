@@ -6,7 +6,7 @@ import { DelayOption } from '@types';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import useTheme from '../../utils/useTheme';
+import useTheme from '../../../utils/useTheme';
 import generateUniqueTabId from '@utils/generateUniqueTabId';
 
 interface DelaySettings {

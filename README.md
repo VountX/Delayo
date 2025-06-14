@@ -39,6 +39,25 @@ Ideal for those who want focus, organization and a tidier tab bar.
 
 ---
 
+## 📂 Project Structure
+
+```
+config/         # Build and tooling configurations
+docs/           # Documentation and guides
+public/
+  html/         # Extension HTML entry points
+  icons/        # Browser action icons
+  _locales/     # i18n message files
+src/
+  assets/       # Fonts, images and global styles
+  background/   # Background service worker
+  components/   # Reusable React components
+  pages/        # Options and popup React apps
+  utils/        # Shared utilities
+```
+
+---
+
 ## 📦 How to Use
 
 1. 📥 Install from the Chrome Web Store (or load unpacked via `chrome://extensions`)
