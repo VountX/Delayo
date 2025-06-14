@@ -5,7 +5,7 @@ import normalizeDelayedTabs from '@utils/normalizeDelayedTabs';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import useTheme from '../../utils/useTheme';
+import useTheme from '../../../utils/useTheme';
 
 function ManageTabsView(): React.ReactElement {
   const [delayedTabs, setDelayedTabs] = useState<DelayedTab[]>([]);

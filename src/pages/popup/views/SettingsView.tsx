@@ -3,9 +3,9 @@ import { Link } from '@tanstack/react-router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-import DonationButton from '../../components/DonationButton';
+import DonationButton from '../../../components/DonationButton';
 import DelaySettingsComponent from '../../options/DelaySettings';
-import useTheme from '../../utils/useTheme';
+import useTheme from '../../../utils/useTheme';
 
 function SettingsView(): React.ReactElement {
   const { theme, toggleTheme } = useTheme();
