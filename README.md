@@ -32,6 +32,13 @@ Ideal for those who want focus, organization and a tidier tab bar.
 
 ---
 
+## 🛠 Requirements
+
+- Node.js >=20
+- pnpm >=8.15.0
+
+---
+
 ## 📦 How to Use
 
 1. 📥 Install from the Chrome Web Store (or load unpacked via `chrome://extensions`)
@@ -102,6 +109,13 @@ Ideal para quem quer foco, organização e menos bagunça na barra de abas.
 | **CRX**          | Empacotamento moderno de extensões para o Chrome |
 | **Tailwind CSS** | Estilização ágil e escalável                     |
 | **DaisyUI**      | Componentes elegantes com suporte a temas        |
+
+---
+
+## 🛠 Requisitos
+
+- Node.js >=20
+- pnpm >=8.15.0
 
 ---
 
