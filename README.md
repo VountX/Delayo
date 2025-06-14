@@ -1,5 +1,76 @@
 # Delayo Chrome Extension 💤
 
+**Delay your tabs in style—and get back to them at the right time.**
+Delayo is a Chrome extension that lets you "snooze tabs," hiding them temporarily and reopening them when you choose.
+Ideal for those who want focus, organization and a tidier tab bar.
+
+> 📌 This project is a *hard fork* of [Snoozr](https://github.com/hardchor/snoozr) with new ideas, its own identity
+> and distinct plans for evolution.
+
+---
+
+## 🚀 Features
+
+- 💤 **Delay Tabs**: Temporarily snooze tabs so you can focus on what matters now
+- ⏰ **Flexible Timing**: Choose from preset times (tonight, tomorrow, next week) or set a custom date/time
+- 🔔 **Notifications**: Be alerted when tabs "wake up"
+- 📋 **Delay Manager**: Manage all your snoozed tabs in one place
+- 🌙 **Dark Mode**: Automatic dark theme based on your system settings
+
+---
+
+## 🧰 Tech Stack
+
+| Technology       | Purpose                                          |
+|------------------|--------------------------------------------------|
+| **Vite**         | Fast development with hot reload                 |
+| **TypeScript**   | Safe typing and coding productivity              |
+| **React**        | Dynamic and responsive interfaces                |
+| **CRX**          | Modern Chrome extension packaging                |
+| **Tailwind CSS** | Agile and scalable styling                       |
+| **DaisyUI**      | Elegant components with theme support            |
+
+---
+
+## 📦 How to Use
+
+1. 📥 Install from the Chrome Web Store (or load unpacked via `chrome://extensions`)
+2. 🖱️ Right-click a tab or use the extension icon
+3. ⏱️ Choose when you want the tab to return
+4. 💤 The tab will close and reopen automatically at the scheduled time
+
+---
+
+## 🧑‍💻 Development
+
+To run locally:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/seu-usuario/delayo.git
+cd delayo
+
+# 2. Install dependencies
+pnpm install
+
+# 3. Start in development mode
+pnpm dev
+
+# 4. Build for production
+pnpm build
+```
+
+## ⚖️ License
+
+This project is licensed under the [MIT License](LICENSE).
+Based on the [Snoozr](https://github.com/hardchor/snoozr) project with modifications and its own identity.
+
+---
+
+## 🇧🇷 Versão em Português
+
+# Delayo Chrome Extension 💤
+
 **Adie suas abas com estilo — e volte a elas no momento certo.**  
 Delayo é uma extensão do Chrome que permite "colocar abas em espera", escondendo-as temporariamente e reabrindo-as no
 momento que você escolher.  
