@@ -32,6 +32,13 @@ Ideal for those who want focus, organization and a tidier tab bar.
 
 ---
 
+## 🛠 Requirements
+
+- Node.js >=20
+- pnpm >=8.15.0
+
+---
+
 ## 📦 How to Use
 
 1. 📥 Install from the Chrome Web Store (or load unpacked via `chrome://extensions`)
@@ -47,7 +54,7 @@ To run locally:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/seu-usuario/delayo.git
+git clone https://github.com/allud1t/delayo.git
 cd delayo
 
 # 2. Install dependencies
@@ -105,6 +112,13 @@ Ideal para quem quer foco, organização e menos bagunça na barra de abas.
 
 ---
 
+## 🛠 Requisitos
+
+- Node.js >=20
+- pnpm >=8.15.0
+
+---
+
 ## 📦 Como Usar
 
 1. 📥 Instale a extensão pela Chrome Web Store (ou carregue não empacotada via `chrome://extensions`)
@@ -120,7 +134,7 @@ Para rodar localmente:
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/seu-usuario/delayo.git
+git clone https://github.com/allud1t/delayo.git
 cd delayo
 
 # 2. Instale dependências
