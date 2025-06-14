@@ -47,7 +47,7 @@ To run locally:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/seu-usuario/delayo.git
+git clone https://github.com/allud1t/delayo.git
 cd delayo
 
 # 2. Install dependencies
@@ -120,7 +120,7 @@ Para rodar localmente:
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/seu-usuario/delayo.git
+git clone https://github.com/allud1t/delayo.git
 cd delayo
 
 # 2. Instale dependências
