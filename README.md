@@ -69,11 +69,11 @@ pnpm build
 
 ## 📋 Contributing
 
-We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) to get started.
+We welcome contributions! Please read our [Contributing Guidelines](docs/CONTRIBUTING.md) to get started.
 
 ## 🔒 Privacy
 
-Your privacy is important to us. Read our [Privacy Policy](PRIVACY.md) to understand how Delayo handles your data.
+Your privacy is important to us. Read our [Privacy Policy](docs/PRIVACY.md) to understand how Delayo handles your data.
 
 ## ⚖️ License
 
@@ -157,11 +157,11 @@ pnpm build
 
 ## 📋 Como Contribuir
 
-Contribuições são bem-vindas! Leia nosso [Guia de Contribuição](CONTRIBUTING.md) para começar.
+Contribuições são bem-vindas! Leia nosso [Guia de Contribuição](docs/CONTRIBUTING.md) para começar.
 
 ## 🔒 Privacidade
 
-Sua privacidade é importante para nós. Leia nossa [Política de Privacidade](PRIVACY.md) para entender como o Delayo trata seus dados.
+Sua privacidade é importante para nós. Leia nossa [Política de Privacidade](docs/PRIVACY.md) para entender como o Delayo trata seus dados.
 
 ## ⚖️ Licença
 
