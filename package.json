@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "preinstall": "npx only-allow pnpm",
     "prepare": "husky install",
-    "release": "standard-version"
+    "release": "standard-version",
+    "zip": "powershell -ExecutionPolicy Bypass -File ./zip.ps1"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
@@ -48,6 +49,7 @@
     "eslint-plugin-react-refresh": "^0.4.6",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.0",
+    "pnpm": "^10.12.1",
     "postcss": "^8.4.38",
     "postcss-prefix-selector": "^1.16.0",
     "prettier": "^3.2.5",
