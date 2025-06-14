@@ -13,7 +13,7 @@
     "preinstall": "npx only-allow pnpm",
     "prepare": "husky install",
     "release": "standard-version",
-    "zip": "powershell -ExecutionPolicy Bypass -File ./zip.ps1"
+    "zip": "powershell -ExecutionPolicy Bypass -File ./scripts/zip.ps1"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.2",

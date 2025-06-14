@@ -1,0 +1,16 @@
+{
+  "types": [
+    { "type": "feat", "section": "✨ Features" },
+    { "type": "fix", "section": "🐛 Fixes" },
+    { "type": "chore", "section": "🧹 Chores", "hidden": false },
+    { "type": "docs", "section": "📝 Docs", "hidden": false },
+    { "type": "refactor", "section": "♻️ Refactors", "hidden": false },
+    { "type": "style", "section": "💄 Style", "hidden": true },
+    { "type": "test", "section": "🧪 Tests", "hidden": true }
+  ],
+  "skip": {
+    "commit": false,
+    "tag": false
+  },
+  "commitAll": true
+}

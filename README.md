@@ -67,6 +67,14 @@ pnpm dev
 pnpm build
 ```
 
+## 📋 Contributing
+
+We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) to get started.
+
+## 🔒 Privacy
+
+Your privacy is important to us. Read our [Privacy Policy](PRIVACY.md) to understand how Delayo handles your data.
+
 ## ⚖️ License
 
 This project is licensed under the [MIT License](LICENSE).
@@ -146,6 +154,14 @@ pnpm dev
 # 4. Build para produção
 pnpm build
 ```
+
+## 📋 Como Contribuir
+
+Contribuições são bem-vindas! Leia nosso [Guia de Contribuição](CONTRIBUTING.md) para começar.
+
+## 🔒 Privacidade
+
+Sua privacidade é importante para nós. Leia nossa [Política de Privacidade](PRIVACY.md) para entender como o Delayo trata seus dados.
 
 ## ⚖️ Licença
 
