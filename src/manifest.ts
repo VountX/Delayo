@@ -8,7 +8,7 @@ const manifest: ManifestV3Export = {
   default_locale: 'en',
   permissions: ['storage', 'tabs', 'alarms', 'notifications', 'contextMenus'],
   action: {
-    default_popup: 'popup.html',
+    default_popup: 'public/html/popup.html',
     default_icon: {
       '16': 'icons/icon16.png',
       '32': 'icons/icon32.png',
@@ -26,7 +26,7 @@ const manifest: ManifestV3Export = {
     '48': 'icons/icon48.png',
     '128': 'icons/icon128.png',
   },
-  options_page: 'options.html',
+  options_page: 'public/html/options.html',
 };
 
 export default manifest;

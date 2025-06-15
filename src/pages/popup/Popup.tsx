@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import '../i18n';
+import '../../i18n';
 
-import Onboarding from '../components/Onboarding';
-import useTheme from '../utils/useTheme';
+import Onboarding from '../../components/Onboarding';
+import useTheme from '../../utils/useTheme';
 import Router from './router';
 
 function Popup(): React.ReactElement {
