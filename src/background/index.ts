@@ -226,3 +226,39 @@ chrome.runtime.onStartup.addListener(async () => {
     }
   }
 });
+
+chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
+  if (request.action === 'wake-tabs' && Array.isArray(request.tabIds)) {
+    const wakeTabs = async (): Promise<void> => {
+      try {
+        const { delayedTabs = [] } = await chrome.storage.local.get('delayedTabs');
+        const normalizedTabs = normalizeDelayedTabs(delayedTabs);
+
+        const tabsToWake = normalizedTabs.filter((tab: DelayedTab) =>
+          request.tabIds.includes(tab.id)
+        );
+
+        for (const tab of tabsToWake) {
+          if (tab.url) {
+            await chrome.tabs.create({ url: tab.url });
+          }
+          await chrome.alarms.clear(`delayed-tab-${tab.id}`);
+        }
+
+        const updatedTabs = normalizedTabs.filter(
+          (tab: DelayedTab) => !request.tabIds.includes(tab.id)
+        );
+
+        await chrome.storage.local.set({ delayedTabs: updatedTabs });
+
+        sendResponse({ success: true });
+      } catch (error) {
+        sendResponse({ success: false, error });
+      }
+    };
+
+    wakeTabs();
+    return true; // keep the message channel open for async response
+  }
+  return undefined;
+});

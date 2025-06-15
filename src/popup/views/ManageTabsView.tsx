@@ -89,19 +89,14 @@ function ManageTabsView(): React.ReactElement {
 
   const wakeSelectedTabs = async (): Promise<void> => {
     try {
-      for (const tabId of selectedTabs) {
-        const tab = delayedTabs.find(item => item.id === tabId);
-        if (tab && tab.url) {
-          await chrome.tabs.create({ url: tab.url });
-        }
-      }
+      await chrome.runtime.sendMessage({
+        action: 'wake-tabs',
+        tabIds: selectedTabs,
+      });
 
-      const updatedTabs = delayedTabs.filter(tab => !selectedTabs.includes(tab.id));
-      await chrome.storage.local.set({ delayedTabs: updatedTabs });
-
-      for (const tabId of selectedTabs) {
-        await chrome.alarms.clear(`delayed-tab-${tabId}`);
-      }
+      const updatedTabs = delayedTabs.filter(
+        tab => !selectedTabs.includes(tab.id)
+      );
 
       setDelayedTabs(updatedTabs);
       setSelectedTabs([]);
